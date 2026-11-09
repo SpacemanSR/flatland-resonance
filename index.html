@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f1e">
+<meta name="description" content="Spacetime as a superfluid, from a resonance field to an evaporating qubit black hole whose message is teleported back out.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flatland">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Flatland Resonance Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+/* Layout: observatory console — a single wide stage with a lineage window docked top-right, controls and provenance notes beneath. Deliberately single dark theme. */
+:root{
+  --bg:#0d0f1e; --panel:#151933; --panel-2:#1c2142; --line:#2b3160; --ink:#e7e5f6; --muted:#9a97bd; --dim:#6d6a92;
+  --violet:#afa9ec; --amber:#ef9f27; --teal:#5dcaa5; --red:#e24b4a; --coral:#d85a30;
+  --f-display:"Newsreader",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.6;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(26px,4vw,36px);line-height:1.1;margin:0;text-wrap:balance}
+h1 em{color:var(--violet)}
+.sub{color:var(--muted);font-size:13px;font-family:var(--f-mono);letter-spacing:.02em}
+.stage{position:relative;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+#main{display:block;width:100%;height:auto;cursor:default}
+.badge{position:absolute;left:14px;top:12px;font-family:var(--f-mono);font-size:12px;color:var(--muted);background:rgba(13,15,30,.7);padding:4px 10px;border-radius:999px;border:1px solid var(--line)}
+.badge b{color:var(--ink);font-weight:500}
+.lineage{position:absolute;top:12px;right:12px;width:236px;max-height:calc(100% - 24px);overflow-y:auto;background:rgba(21,25,51,.92);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.lineage-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lineage-head span{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.lineage-head button{font:inherit;font-size:11px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:6px;padding:2px 8px;cursor:pointer}
+.lineage ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;position:relative}
+.lineage ol::before{content:"";position:absolute;left:31px;top:20px;bottom:20px;width:1px;background:var(--line)}
+.ver{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:transparent;border:1px solid transparent;border-radius:8px;padding:5px;cursor:pointer;position:relative}
+.ver:hover{background:var(--panel-2)}
+.ver:focus-visible{outline:2px solid var(--violet);outline-offset:1px}
+.ver[aria-current="true"]{background:var(--panel-2);border-color:var(--violet)}
+.ver canvas{width:64px;height:41px;border-radius:5px;background:var(--bg);display:block;border:1px solid var(--line)}
+.ver .vn{font-family:var(--f-mono);font-size:11px;color:var(--violet)}
+.ver .vt{font-size:12.5px;line-height:1.3;color:var(--ink)}
+.lineage.collapsed ol{display:none}
+.controls{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+.ctl{display:flex;align-items:center;gap:10px;min-width:220px;flex:1 1 220px}
+.ctl label{font-size:13px;color:var(--muted);min-width:104px}
+.ctl output{font-family:var(--f-mono);font-size:13px;min-width:22px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{flex:1;accent-color:var(--violet)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover{border-color:var(--violet)}
+.btn:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:7px}
+.legend i.dot{width:7px;height:7px;border-radius:50%}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.stat .v{font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+.stat .f{font-family:var(--f-mono);font-size:11.5px;color:var(--dim)}
+.notes{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr);gap:22px;border-top:1px solid var(--line);padding-top:18px}
+.notes h2{font-family:var(--f-display);font-weight:400;font-size:20px;margin:0 0 8px}
+.notes h3{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:500;margin:0 0 8px}
+.notes p,.notes li{font-size:14px;color:var(--ink);max-width:62ch}
+.notes p{margin:0}
+.notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.notes .est h3{color:var(--teal)}
+.notes .int h3{color:var(--amber)}
+.toast{font-size:12px;color:var(--teal);min-height:1em}
+.pagepanel{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:12px 14px 8px}
+.pp-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;align-items:baseline;margin-bottom:6px}
+.pp-title{font-family:var(--f-display);font-size:18px}
+.pp-key{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.pp-key i{display:inline-block;width:14px;height:2px}
+.pp-key i.dash{background:repeating-linear-gradient(90deg,var(--muted) 0 4px,transparent 4px 7px)}
+.pp-key i.dash.teal{background:repeating-linear-gradient(90deg,var(--teal) 0 4px,transparent 4px 7px)}
+.pp-key i.band{height:7px;background:var(--violet);opacity:.3}
+#pagec{display:block;width:100%;height:auto}
+.btn.on{border-color:var(--violet);color:var(--violet)}
+.hint{font-size:12px;color:var(--dim)}
+@media (max-width:760px){
+  .lineage{position:static;width:auto;border-radius:0;border:0;border-top:1px solid var(--line);background:var(--panel)}
+  .lineage ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lineage ol::before{display:none}
+  .notes{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){.btn,.ver{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Flatland <em>resonance</em> model</h1>
+    <div class="sub">spacetime as a superfluid · source plane as boundary</div>
+  </header>
+
+  <div class="stage">
+    <canvas id="main" aria-label="Animated model of the current version"></canvas>
+    <div class="badge" id="badge"><b>v4</b> · sonic horizon</div>
+    <nav class="lineage" id="lineage" aria-label="Model versions">
+      <div class="lineage-head"><span>Model lineage</span><button id="collapse" aria-expanded="true">Hide</button></div>
+      <ol id="verlist"></ol>
+    </nav>
+  </div>
+
+  <div class="pagepanel" id="pagepanel" hidden>
+    <div class="pp-head"><span class="pp-title">Page curve, computed live</span><span class="pp-key" id="pp-key"><i style="background:var(--violet)"></i>Radiation entropy S₂ <i class="dash"></i>Hawking’s prediction <i style="background:var(--amber)"></i>Message recovered (right axis)</span></div>
+    <canvas id="pagec" aria-label="Chart of radiation entropy and message recovery against qubits radiated"></canvas>
+  </div>
+  <div class="controls" id="controls"></div>
+  <div class="stats" id="stats" hidden></div>
+  <div class="legend" id="legend"></div>
+  <div class="btns">
+    <button class="btn" id="pause">Pause</button>
+    <button class="btn" id="copy">Copy parameters</button>
+    <span class="toast" id="toast" aria-live="polite"></span>
+  </div>
+
+  <section class="notes" aria-label="Version notes">
+    <div><h2 id="n-title">Sonic horizon and thermal boundary</h2><h3>What changed</h3><p id="n-changed"></p></div>
+    <div class="est"><h3>Established physics</h3><ul id="n-est"></ul></div>
+    <div class="int"><h3>Interpretive choices</h3><ul id="n-int"></ul></div>
+  </section>
+</div>
+
+<script>
+const C={field:'#7F77DD',fieldHi:'#AFA9EC',inner:'#4A40A8',amber:'#EF9F27',core:'#BA7517',teal:'#1D9E75',tealHi:'#5DCAA5',red:'#E24B4A',coral:'#D85A30'};
+const VERS=[
+ {id:'v1',name:'Superfluid field',orient:'h',kind:'swirl',defaults:{mode:3,mag:5,vor:2},
+  ctls:[['mode','Resonance mode',1,6],['mag','Magnetism',0,10],['vor','Vortices',0,5]],
+  legend:[['Resonance field',C.field],['Magnetic field lines',C.amber],['Flatland source plane',C.teal]],
+  changed:'Spacetime drawn as a resonating superfluid membrane rising out of an endless flat source plane, with a magnetic dipole twisting the whole medium.',
+  est:['Quantized vortices are measured in superfluid helium and Bose-Einstein condensates.','Treating spacetime as a condensate is an active, non-mainstream research program (superfluid vacuum theory; Volovik, The Universe in a Helium Droplet).'],
+  int:['A neutral superfluid such as helium-4 does not respond to magnetic fields, so the global twist is not physical.','Standing-wave modes on a square membrane are illustrative.','The source plane as metaphysical infinity is an artistic reading.']},
+ {id:'v2',name:'East–west turn',orient:'w',kind:'swirl',defaults:{mode:3,mag:5,vor:2},
+  ctls:[['mode','Resonance mode',1,6],['mag','Magnetism',0,10],['vor','Vortices',0,5]],
+  legend:[['Resonance field',C.field],['Magnetic field lines',C.amber],['Source plane (west)',C.teal]],
+  changed:'Same physics as v1, re-oriented: the source plane stands vertically on the west and the field grows eastward, rolling slowly about the east–west axis.',
+  est:['Unchanged from v1.'],
+  int:['Orientation is a presentation choice; it carries no physical meaning.','All v1 caveats still apply.']},
+ {id:'v3',name:'Flux tubes and holographic boundary',orient:'e',kind:'flux',defaults:{mode:3,flux:4},
+  ctls:[['mode','Resonance mode',1,6],['flux','Magnetic flux quanta',0,7]],
+  legend:[['Resonance field',C.field],['Flux tubes (one quantum each)',C.amber],['Source plane (east), click it',C.teal]],
+  changed:'Flipped so the source is on the east. Magnetism now enters only as quantized flux tubes through vortex cores, and clicking the plane sends a boundary pulse that reshapes the entire field at once.',
+  est:['In a type-II superconductor, magnetic flux enters only through quantized Abrikosov vortices, which arrange into a triangular lattice.','Holographic principle (’t Hooft, Susskind) and AdS/CFT: a lower-dimensional boundary encodes a higher-dimensional bulk.'],
+  int:['Vortices are placed on a ring, approximating the lattice.','The click-position to standing-wave mapping is invented to show non-locality. It is not an AdS/CFT dictionary.']},
+ {id:'v4',name:'Sonic horizon and thermal boundary',orient:'e',kind:'drain',defaults:{drain:5,spin:4,mode:3,thermal:1},
+  ctls:[['drain','Drain',0,10],['spin','Spin',0,10],['mode','Resonance mode',1,6]],chk:['thermal','Thermal boundary'],
+  legend:[['Field',C.field],['Horizon',C.red],['Ergoregion',C.amber],['Test ripple',C.tealHi,1],['Pair at horizon',C.coral,1]],
+  changed:'The field drains into a spinning central vortex. Where flow outruns the wave speed a horizon forms; test ripples stall at it, pairs appear there, and the boundary fills with noise in proportion to horizon size.',
+  est:['Acoustic (sonic) horizons in flowing fluids are exact analogs of event horizons (Unruh, 1981).','For a draining-bathtub flow, horizon r_h = |A|/c and ergoregion r_e = √(A²+B²)/c (Visser, 1998). These are the formulas used here.','Analog Hawking radiation in a BEC reported by Steinhauer’s group (2016, 2019); superradiance from a fluid vortex observed (Torres et al., 2017).','In AdS/CFT a bulk black hole corresponds to a thermal state on the boundary.'],
+  int:['Particle pairs are a heuristic picture, not the actual derivation.','Boundary temperature follows the large-AdS rule (T grows with r_h), while the analog hole would follow T ∝ 1/r_h. The conflict is unresolved here; the Hawking–Page transition is the natural next stage.']},
+ {id:'v5',name:'Evaporation and the Page curve',orient:'e',kind:'evap',defaults:{depth:3,mode:3,seed:1},
+  ctls:[['depth','Scrambling depth',1,6],['mode','Resonance mode',1,6]],
+  legend:[['Field',C.field],['Horizon',C.red],['Radiated qubit',C.coral,1],['Message',C.amber,1],['Bath (source plane)',C.teal]],
+  changed:'The hole is now a 13-qubit quantum register scrambled by random gates. Each step it radiates one qubit into the source plane, which acts as the bath. Entropy and message recovery are computed from the exact quantum state, and the fluid horizon shrinks as qubits leave.',
+  est:['Page (1993): if evaporation preserves information, radiation entropy rises, peaks near the halfway point, and returns to zero. Hawking’s calculation predicts it keeps rising.','Penington (2019) and Almheiri, Engelhardt, Marolf and Maxfield (2019) derived the Page curve from gravity by coupling an AdS black hole to an external bath and using islands.','Hayden and Preskill (2007): information thrown into a hole past its Page time returns after a short scrambling delay; in a young hole it stays hidden until the Page time.','Random quantum circuits are a standard model of black-hole scrambling. Rényi-2 entropy is a standard entanglement measure, also used in quantum-simulator experiments.'],
+  int:['Tying horizon radius to the number of qubits left is my mapping, not a derived result.','The temperature now follows the small-hole rule (hotter as it shrinks), chosen because the bath lets the hole evaporate.','Thirteen qubits is tiny, so curves are noisy and the Page time falls near six or seven qubits.','Layers of random rotations and randomly paired CZ gates approximate a fast scrambler; they are not Haar-random unitaries.','The model shows what the Page curve looks like. It does not show how islands produce it.']},
+ {id:'v6',name:'Islands',orient:'e',kind:'evap',island:true,defaults:{depth:3,mode:3,seed:1},
+  ctls:[['depth','Scrambling depth',1,6],['mode','Resonance mode',1,6]],
+  legend:[['Field',C.field],['Horizon',C.red],['Island (filled once it wins)',C.tealHi],['Radiated qubit',C.coral,1],['Message',C.amber,1]],
+  changed:'Adds the island formula on top of the v5 qubit engine. Two candidate answers for the radiation’s entropy are computed side by side: no island, which is the Hawking count, and island, whose cost is the area of the island’s boundary, set here by the qubits left in the hole. The smaller one wins. After the Page time the island switches on just inside the horizon and joins the radiation.',
+  est:['Island formula (quantum extremal surface prescription): the radiation’s entropy is the minimum, over candidate islands, of the island boundary’s area term plus the ordinary entropy of radiation and island together (Almheiri, Mahajan, Maldacena and Zhao 2019; Penington 2019; Almheiri, Engelhardt, Marolf and Maxfield 2019).','Replica wormholes in the gravitational path integral justify the formula (Penington, Shenker, Stanford and Yang 2019; Almheiri, Hartman, Maldacena, Shaghoulian and Tajdini 2019).','For an evaporating hole the extremal surface sits just inside the horizon, and once the island wins, the interior belongs to the radiation. That is why a message thrown in after the Page time comes back out.','For random states, the exact entropy sits about one bit below the leading formula near the Page time (Page 1993). That gap is a finite-size correction, not a failure.'],
+  int:['The area term is set equal to the number of qubits left, and the bulk term with the island is taken as zero.','The island’s drawn radius, 0.85 of the horizon, is visual only.','The formula is an input, not derived from replica wormholes. Its agreement with the qubit engine is a consistency check, because the engine knows nothing about islands.']},
+ {id:'v7',name:'Circuit islands',orient:'e',kind:'evap',cut:true,defaults:{depth:3,mode:3,seed:1},
+  ctls:[['depth','Scrambling depth',1,6],['mode','Resonance mode',1,6]],
+  legend:[['Horizon',C.red],['Gate on the radiation’s side (island)',C.tealHi,1],['Gate on the hole’s side',C.field,1],['Minimal cut',C.coral],['Radiated qubit',C.coral,1]],
+  changed:'Replaces the hand-set island formula with a computed one. The model records every gate the qubit engine applies, treats the circuit as a network, and finds the minimal cut separating the radiation from what remains in the hole. Gates on the radiation’s side of that cut form the island. Inside the horizon the circuit’s history is drawn from the center (earliest) to the rim (now), with the cut in coral.',
+  est:['In random circuits, the entanglement across a division is bounded by the fewest bonds a cut must sever, and the bound becomes tight for strongly scrambling gates. This is the minimal-membrane picture (Nahum, Ruhman, Vijay and Haah 2017; Jonay, Huse and Nahum 2018).','Random tensor networks reproduce the Ryu–Takayanagi minimal-surface rule as a minimal cut (Hayden, Nezami, Qi, Thomas, Walter and Yang 2016).','For an evaporating hole, the quantum extremal surface sits slightly behind the horizon, roughly one scrambling time in the past (Penington 2019).'],
+  int:['Each CZ gate and each worldline segment counts as one bit. For these gates the cut is an upper bound on the entropy, tight only in a large-dimension limit.','Laying the circuit history on the disk is a visual choice.','Calling the radiation-side gates an island is an analogy built on the same minimal-cut logic that gives Ryu–Takayanagi in tensor networks. It does not derive replica wormholes.']},
+ {id:'v8',name:'Decoding the message',orient:'e',kind:'evap',cut:true,decode:true,defaults:{depth:3,mode:3,seed:1},
+  ctls:[['depth','Scrambling depth',1,6],['mode','Resonance mode',1,6]],
+  legend:[['Horizon',C.red],['Island',C.tealHi,1],['Minimal cut',C.coral],['Message',C.amber,1]],
+  changed:'Builds the decoder. Using Uhlmann’s theorem, the model computes how well a decoder acting only on the radiation can hand the message back, measured as entanglement fidelity with the reference qubit that stayed outside. A fidelity of 0.25 is guessing; 1 is perfect recovery.',
+  est:['Uhlmann’s theorem: two purifications of states are related by a unitary on the purifying system, and the best such unitary achieves their fidelity. Here that unitary is the decoder, acting on the radiation alone.','Decoupling: once what remains in the hole carries no information about the message, the radiation alone can recover it (Hayden and Preskill 2007).','For one qubit, average fidelity over all message states equals (2F + 1)/3 for entanglement fidelity F.','Decoding scrambled information has been demonstrated on trapped ions with a teleportation-based protocol (Yoshida and Kitaev 2017; Landsman et al. 2019).'],
+  int:['The fidelity is F(ρ_RB, I/2 ⊗ ρ_B): the decoder must leave the hole’s state as it is. The unrestricted optimum can be slightly higher.','The model proves the decoder exists and reports its performance. It does not write out the decoder’s circuit.','Fidelity is computed once seven or fewer qubits remain in the hole, a compute limit that happens to coincide with the Page region.','The decoder assumes full knowledge of the circuit, as Hayden–Preskill does.']},
+ {id:'v9',name:'Teleporting the message out',orient:'e',kind:'yk',defaults:{depth:6,k:3,seed:1,msg:'t'},
+  ctls:[['depth','Scrambling depth',1,8],['k','Radiated qubits collected',1,5]],
+  legend:[['Horizon',C.red],['Radiated qubit',C.coral,1],['Decoder (mirror hole)',C.tealHi],['Bell check',C.tealHi],['Message out',C.amber,1]],
+  changed:'Runs the explicit Yoshida–Kitaev decoder. A six-qubit hole, the message plus five qubits, starts fully entangled with five qubits of early radiation held by the decoder, so it is an old hole in the Hayden–Preskill sense. After scrambling, k qubits radiate. The decoder runs the hole’s dynamics with every gate complex-conjugated on its copy plus a fresh Bell pair, then checks whether each radiated qubit and its mirror partner form a Bell pair. When the check passes, the message appears on the decoder’s output qubit. Pick the message and compare what comes out.',
+  est:['Yoshida and Kitaev (2017): with fully scrambling dynamics the check passes with probability 1/d² for a d-dimensional message, and the teleported fidelity is 1/(d²·P). For one qubit, P approaches 1/4 and fidelity approaches 1 as enough qubits radiate.','The setting is Hayden and Preskill’s (2007): an old hole whose early radiation is held by the decoder.','A closely related teleportation-based decoding of scrambled information was run on trapped-ion qubits (Landsman et al. 2019).'],
+  int:['This is a separate, smaller hole than v5–v8. Running the decoder on the 13-qubit hole would need about 30 simulated qubits, beyond what a browser can hold.','The decoder is given perfect early-radiation copies and the exact circuit.','This is the probabilistic version; a failed check is reported as a lower success probability. The paper’s deterministic, Grover-style version is not implemented.','Radiated qubits are taken from the far end of the register, so the message has to be scrambled to reach them.']}
+];
+const params={};VERS.forEach(v=>params[v.id]={...v.defaults});
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const NB=13,QM=13,QR=14,NQ=15,DIM=1<<NQ;
+class QEngine{
+  constructor(seed,depth){this.seed=seed;this.depth=depth;this.reset();}
+  reset(){
+    this.rng=mulberry32(this.seed);this.re=new Float64Array(DIM);this.im=new Float64Array(DIM);this.re[0]=1;
+    this.h(QR);this.cnot(QR,QM);
+    this.bh=[];for(let q=0;q<NB;q++)this.bh.push(q);this.rad=[];this.thrown=false;this.throwAt=null;this.log=[];
+    for(let k=0;k<6;k++)this.layer();
+    this.hist=[{n:0,S:0,I:0,bh:this.bh.length}];
+  }
+  h(q){const s=Math.SQRT1_2,m=1<<q;for(let i=0;i<DIM;i++)if(!(i&m)){const j=i|m,ar=this.re[i],ai=this.im[i],br=this.re[j],bi=this.im[j];this.re[i]=s*(ar+br);this.im[i]=s*(ai+bi);this.re[j]=s*(ar-br);this.im[j]=s*(ai-bi);}}
+  cnot(c,t){const mc=1<<c,mt=1<<t;for(let i=0;i<DIM;i++)if((i&mc)&&!(i&mt)){const j=i|mt;let x=this.re[i];this.re[i]=this.re[j];this.re[j]=x;x=this.im[i];this.im[i]=this.im[j];this.im[j]=x;}}
+  cz(a,b){const m=(1<<a)|(1<<b);for(let i=0;i<DIM;i++)if((i&m)===m){this.re[i]=-this.re[i];this.im[i]=-this.im[i];}}
+  u(q){const r=this.rng,th=2*Math.acos(Math.sqrt(r())),ph=r()*6.2832,la=r()*6.2832,c=Math.cos(th/2),s=Math.sin(th/2);
+    const u00r=c,u00i=0,u01r=-Math.cos(la)*s,u01i=-Math.sin(la)*s,u10r=Math.cos(ph)*s,u10i=Math.sin(ph)*s,u11r=Math.cos(ph+la)*c,u11i=Math.sin(ph+la)*c,m=1<<q;
+    for(let i=0;i<DIM;i++)if(!(i&m)){const j=i|m,ar=this.re[i],ai=this.im[i],br=this.re[j],bi=this.im[j];
+      this.re[i]=u00r*ar-u00i*ai+u01r*br-u01i*bi;this.im[i]=u00r*ai+u00i*ar+u01r*bi+u01i*br;
+      this.re[j]=u10r*ar-u10i*ai+u11r*br-u11i*bi;this.im[j]=u10r*ai+u10i*ar+u11r*bi+u11i*br;}}
+  layer(){const b=this.bh.slice();for(const q of b)this.u(q);
+    for(let i=b.length-1;i>0;i--){const j=Math.floor(this.rng()*(i+1));[b[i],b[j]]=[b[j],b[i]];}
+    const pr=[];for(let i=0;i+1<b.length;i+=2){this.cz(b[i],b[i+1]);pr.push([b[i],b[i+1]]);}this.log.push({t:'L',pairs:pr});}
+  s2(sub){
+    let A=sub.slice();if(A.length===0)return 0;
+    if(A.length>NQ/2){const s=new Set(A);A=[];for(let q=0;q<NQ;q++)if(!s.has(q))A.push(q);}
+    const inA=new Set(A),B=[];for(let q=0;q<NQ;q++)if(!inA.has(q))B.push(q);
+    const dA=1<<A.length,dB=1<<B.length,Mr=new Float64Array(dA*dB),Mi=new Float64Array(dA*dB);
+    for(let i=0;i<DIM;i++){let a=0,b=0;for(let k=0;k<A.length;k++)if(i>>A[k]&1)a|=1<<k;for(let k=0;k<B.length;k++)if(i>>B[k]&1)b|=1<<k;Mr[a*dB+b]=this.re[i];Mi[a*dB+b]=this.im[i];}
+    let pur=0;
+    for(let a=0;a<dA;a++)for(let c=a;c<dA;c++){let gr=0,gi=0;const oa=a*dB,oc=c*dB;
+      for(let b=0;b<dB;b++){const xr=Mr[oa+b],xi=Mi[oa+b],yr=Mr[oc+b],yi=-Mi[oc+b];gr+=xr*yr-xi*yi;gi+=xr*yi+xi*yr;}
+      pur+=(a===c?1:2)*(gr*gr+gi*gi);}
+    return -Math.log2(Math.max(pur,1e-300));
+  }
+  throwMessage(){if(this.thrown||!this.bh.length)return false;this.thrown=true;this.bh.push(QM);this.throwAt=this.rad.length;this.log.push({t:'T'});return true;}
+  emit(){if(!this.bh.length)return null;for(let k=0;k<this.depth;k++)this.layer();
+    const idx=Math.floor(this.rng()*this.bh.length),q=this.bh.splice(idx,1)[0];this.rad.push(q);this.log.push({t:'E',q});
+    const S=this.s2(this.rad),I=this.thrown?Math.max(0,1+S-this.s2(this.rad.concat([QR]))):0;
+    const rec={n:this.rad.length,S,I,bh:this.bh.length};this.hist.push(rec);return rec;}
+}
+const engs={};function getEng(id){id=id||cur.id;if(!engs[id])engs[id]=new QEngine(params[id].seed,params[id].depth);return engs[id];}
+const evapD=id=>getEng(id).bh.length/14*0.25;
+const islandOn=E=>E.bh.length>0&&E.rad.length>=E.bh.length;
+// Yoshida–Kitaev probabilistic decoder, exact statevector, 14 qubits.
+// Slots: A=0, B1..B5=1..5 (black hole), B'1..B'5=6..10 (early radiation held by decoder), A'=11, R'=12, R=13
+const YK_N=14,YK_DIM=1<<YK_N,AB=[0,1,2,3,4,5],ABp=[11,6,7,8,9,10],Q_R=13,Q_Rp=12;
+function ykRun(seed,depth,k){
+  const rng=mulberry32(seed*7919+depth*31),re=new Float64Array(YK_DIM),im=new Float64Array(YK_DIM);re[0]=1;
+  const H=q=>{const s=Math.SQRT1_2,m=1<<q;for(let i=0;i<YK_DIM;i++)if(!(i&m)){const j=i|m,a=re[i],b=im[i],c=re[j],d=im[j];re[i]=s*(a+c);im[i]=s*(b+d);re[j]=s*(a-c);im[j]=s*(b-d);}};
+  const CX=(c,t)=>{const mc=1<<c,mt=1<<t;for(let i=0;i<YK_DIM;i++)if((i&mc)&&!(i&mt)){const j=i|mt;let x=re[i];re[i]=re[j];re[j]=x;x=im[i];im[i]=im[j];im[j]=x;}};
+  const CZ=(a,b)=>{const m=(1<<a)|(1<<b);for(let i=0;i<YK_DIM;i++)if((i&m)===m){re[i]=-re[i];im[i]=-im[i];}};
+  const U=(q,u)=>{const m=1<<q,[a,b,c,d]=u;for(let i=0;i<YK_DIM;i++)if(!(i&m)){const j=i|m,xr=re[i],xi=im[i],yr=re[j],yi=im[j];
+    re[i]=a[0]*xr-a[1]*xi+b[0]*yr-b[1]*yi;im[i]=a[0]*xi+a[1]*xr+b[0]*yi+b[1]*yr;re[j]=c[0]*xr-c[1]*xi+d[0]*yr-d[1]*yi;im[j]=c[0]*xi+c[1]*xr+d[0]*yi+d[1]*yr;}};
+  const bell=(a,b)=>{H(a);CX(a,b);};
+  bell(0,Q_R);for(let i=1;i<=5;i++)bell(i,i+5);bell(11,Q_Rp);
+  const gates=[];
+  for(let l=0;l<depth;l++){for(let s=0;s<6;s++){const th=2*Math.acos(Math.sqrt(rng())),ph=rng()*6.2832,la=rng()*6.2832,c=Math.cos(th/2),sn=Math.sin(th/2);
+      gates.push({t:'u',s,u:[[c,0],[-Math.cos(la)*sn,-Math.sin(la)*sn],[Math.cos(ph)*sn,Math.sin(ph)*sn],[Math.cos(ph+la)*c,Math.sin(ph+la)*c]]});}
+    const p=[0,1,2,3,4,5];for(let i=5;i>0;i--){const j=Math.floor(rng()*(i+1));[p[i],p[j]]=[p[j],p[i]];}
+    for(let i=0;i<6;i+=2)gates.push({t:'cz',a:p[i],b:p[i+1]});}
+  for(const g of gates){if(g.t==='u'){U(AB[g.s],g.u);U(ABp[g.s],g.u.map(([r,i])=>[r,-i]));}else{CZ(AB[g.a],AB[g.b]);CZ(ABp[g.a],ABp[g.b]);}}
+  // radiated D = last k slots (far from the message slot); project each (D, D') pair onto a Bell pair
+  for(let s=0;s<k;s++){const d=AB[5-s],dp=ABp[5-s];CX(d,dp);H(d);const m=(1<<d)|(1<<dp);for(let i=0;i<YK_DIM;i++)if(i&m){re[i]=0;im[i]=0;}}
+  let P=0;for(let i=0;i<YK_DIM;i++)P+=re[i]*re[i]+im[i]*im[i];
+  // reduced 4x4 state of (R, R') after success, normalized. basis index = r*2 + r'
+  const rr=new Float64Array(16),ri=new Float64Array(16),mR=1<<Q_R,mP=1<<Q_Rp,rest=~(mR|mP)&(YK_DIM-1),groups=new Map();
+  for(let i=0;i<YK_DIM;i++){if(!re[i]&&!im[i])continue;const key=i&rest;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(i);}
+  for(const idx of groups.values())for(const i of idx)for(const j of idx){const a=((i&mR)?2:0)+((i&mP)?1:0),b=((j&mR)?2:0)+((j&mP)?1:0);
+    rr[a*4+b]+=(re[i]*re[j]+im[i]*im[j])/P;ri[a*4+b]+=(im[i]*re[j]-re[i]*im[j])/P;}
+  // EPR fidelity <Phi|rho|Phi>, Phi=(|00>+|11>)/sqrt2
+  const F=(rr[0]+rr[3]+rr[12]+rr[15])/2;
+  return{P,F,rr,ri};
+}
+// Bloch vector of R' given message state m=(alpha,beta) fed into A (equivalent to projecting R onto conj(m)).
+function ykOutput(res,ar,ai,br,bi){
+  const cm=[[ar,-ai],[br,-bi]],out=[[0,0],[0,0],[0,0],[0,0]];
+  // rho_out[x][y] = sum_{r,s} conj(cm_r) cm_s rho[(r,x),(s,y)] ... projector <m*| on R: amplitude weight conj(conj(m)_r)=m_r
+  for(let x=0;x<2;x++)for(let y=0;y<2;y++){let sr=0,si=0;for(let r=0;r<2;r++)for(let s=0;s<2;s++){
+    const pr=res.rr[(r*2+x)*4+(s*2+y)],pi=res.ri[(r*2+x)*4+(s*2+y)];
+    const wr=cm[r][0]*cm[s][0]+cm[r][1]*cm[s][1],wi=cm[r][0]*cm[s][1]-cm[r][1]*cm[s][0];// conj(cm_r)*cm_s
+    sr+=wr*pr-wi*pi;si+=wr*pi+wi*pr;}out[x*2+y]=[sr,si];}
+  const tr=out[0][0]+out[3][0];
+  return{x:2*out[1][0]/tr,y:-2*out[1][1]/tr,z:(out[0][0]-out[3][0])/tr};
+}
+
+const MSGS={'0':['|0⟩',1,0,0,0],'1':['|1⟩',0,0,1,0],'+':['|+⟩',Math.SQRT1_2,0,Math.SQRT1_2,0],'-':['|−⟩',Math.SQRT1_2,0,-Math.SQRT1_2,0],'+i':['|+i⟩',Math.SQRT1_2,0,0,Math.SQRT1_2],'t':['tilted',Math.cos(0.6),0,Math.sin(0.6)*Math.cos(1.1),Math.sin(0.6)*Math.sin(1.1)]};
+const ykS={res:null,key:''};
+function ykCompute(){const p=params.v9,key=p.seed+'|'+p.depth;if(ykS.key!==key){ykS.res=[1,2,3,4,5].map(k=>ykRun(p.seed,p.depth,k));ykS.key=key;}return ykS.res;}
+function ykMsg(){const m=MSGS[params.v9.msg]||MSGS['+'];return{name:m[0],ar:m[1],ai:m[2],br:m[3],bi:m[4]};}
+function blochOf(m){const x=2*(m.ar*m.br+m.ai*m.bi),y=2*(m.ar*m.bi-m.ai*m.br),z=m.ar*m.ar+m.ai*m.ai-m.br*m.br-m.bi*m.bi;return{x,y,z};}
+
+function maxflow(N,es,s,t){const g=Array.from({length:N},()=>[]),to=[],cap=[];
+  const add=(u,v,c)=>{g[u].push(to.length);to.push(v);cap.push(c);g[v].push(to.length);to.push(u);cap.push(0);};
+  es.forEach(([u,v,c,und])=>{add(u,v,c);if(und){g[v].push(to.length);to.push(u);cap.push(c);g[u].push(to.length);to.push(v);cap.push(0);}});
+  let flow=0;const lvl=new Int32Array(N),it=new Int32Array(N);
+  const bfs=()=>{lvl.fill(-1);lvl[s]=0;const q=[s];for(let h=0;h<q.length;h++){const u=q[h];for(const e of g[u])if(cap[e]>1e-9&&lvl[to[e]]<0){lvl[to[e]]=lvl[u]+1;q.push(to[e]);}}return lvl[t]>=0;};
+  const dfs=(u,f)=>{if(u===t)return f;for(;it[u]<g[u].length;it[u]++){const e=g[u][it[u]],v=to[e];if(cap[e]>1e-9&&lvl[v]===lvl[u]+1){const d=dfs(v,Math.min(f,cap[e]));if(d>1e-9){cap[e]-=d;cap[e^1]+=d;return d;}}}return 0;};
+  while(bfs()){it.fill(0);let f;while((f=dfs(s,1e18))>1e-9)flow+=f;}
+  const side=new Uint8Array(N),q=[s];side[s]=1;for(let h=0;h<q.length;h++){const u=q[h];for(const e of g[u])if(cap[e]>1e-9&&!side[to[e]]){side[to[e]]=1;q.push(to[e]);}}
+  return{flow,side};}
+function circuitCut(log,bh,mf){
+  const nodes=[],edges=[];const S=-1,T=-2;const last={};let layer=0;
+  for(const ev of log){
+    if(ev.t==='L'){for(const[a,b]of ev.pairs){const na=nodes.length;nodes.push({q:a,layer});const nb=nodes.length;nodes.push({q:b,layer});edges.push([na,nb,1]);
+        for(const[q,n]of[[a,na],[b,nb]]){if(last[q]!==undefined)edges.push([last[q],n,1]);last[q]=n;}}layer++;}
+    else if(ev.t==='T'){last[13]=T;}
+    else if(ev.t==='E'){if(last[ev.q]!==undefined)edges.push([last[ev.q],S,1]);delete last[ev.q];}
+  }
+  for(const q of bh)if(last[q]!==undefined)edges.push([last[q],T,1]);
+  const N=nodes.length,sI=N,tI=N+1,map=x=>x===S?sI:x===T?tI:x;
+  const r=mf(N+2,edges.filter(e=>e[0]!==e[1]).map(([u,v,c])=>[map(u),map(v),c,true]),sI,tI);
+  const island=[];for(let i=0;i<N;i++)if(r.side[i])island.push(i);
+  const cutEdges=edges.filter(([u,v])=>{const su=r.side[map(u)],sv=r.side[map(v)];return su!==sv;});
+  return{cut:r.flow,island,nodes,layers:layer,cutEdges};}
+// Real symmetric eigen: Householder tridiagonalization + implicit QL (Numerical Recipes tred2/tqli, 0-indexed).
+function symEig(a,n,wantVec){
+  const d=new Float64Array(n),e=new Float64Array(n);
+  for(let i=n-1;i>0;i--){const l=i-1;let h=0,scale=0;
+    if(l>0){for(let k=0;k<=l;k++)scale+=Math.abs(a[i*n+k]);
+      if(scale===0)e[i]=a[i*n+l];
+      else{for(let k=0;k<=l;k++){a[i*n+k]/=scale;h+=a[i*n+k]*a[i*n+k];}
+        let f=a[i*n+l],g=f>=0?-Math.sqrt(h):Math.sqrt(h);e[i]=scale*g;h-=f*g;a[i*n+l]=f-g;f=0;
+        for(let j=0;j<=l;j++){if(wantVec)a[j*n+i]=a[i*n+j]/h;g=0;for(let k=0;k<=j;k++)g+=a[j*n+k]*a[i*n+k];for(let k=j+1;k<=l;k++)g+=a[k*n+j]*a[i*n+k];e[j]=g/h;f+=e[j]*a[i*n+j];}
+        const hh=f/(h+h);for(let j=0;j<=l;j++){f=a[i*n+j];e[j]=g=e[j]-hh*f;for(let k=0;k<=j;k++)a[j*n+k]-=(f*e[k]+g*a[i*n+k]);}}}
+    else e[i]=a[i*n+l];d[i]=h;}
+  if(wantVec)d[0]=0;e[0]=0;
+  for(let i=0;i<n;i++){
+    if(wantVec){const l=i-1;if(d[i]){for(let j=0;j<=l;j++){let g=0;for(let k=0;k<=l;k++)g+=a[i*n+k]*a[k*n+j];for(let k=0;k<=l;k++)a[k*n+j]-=g*a[k*n+i];}}
+      d[i]=a[i*n+i];a[i*n+i]=1;for(let j=0;j<=l;j++)a[j*n+i]=a[i*n+j]=0;}
+    else d[i]=a[i*n+i];}
+  for(let i=1;i<n;i++)e[i-1]=e[i];e[n-1]=0;
+  for(let l=0;l<n;l++){let iter=0,m;
+    do{for(m=l;m<n-1;m++){const dd=Math.abs(d[m])+Math.abs(d[m+1]);if(Math.abs(e[m])<=1e-15*dd)break;}
+      if(m!==l){if(iter++>60)break;let g=(d[l+1]-d[l])/(2*e[l]),r=Math.hypot(g,1);g=d[m]-d[l]+e[l]/(g+(g>=0?Math.abs(r):-Math.abs(r)));
+        let s=1,c=1,p=0,i;
+        for(i=m-1;i>=l;i--){let f=s*e[i];const b=c*e[i];e[i+1]=(r=Math.hypot(f,g));
+          if(r===0){d[i+1]-=p;e[m]=0;break;}
+          s=f/r;c=g/r;g=d[i+1]-p;r=(d[i]-g)*s+2*c*b;d[i+1]=g+(p=s*r);g=c*r-b;
+          if(wantVec)for(let k=0;k<n;k++){f=a[k*n+i+1];a[k*n+i+1]=s*a[k*n+i]+c*f;a[k*n+i]=c*a[k*n+i]-s*f;}}
+        if(r===0&&i>=l)continue;d[l]-=p;e[l]=g;e[m]=0;}
+    }while(m!==l);}
+  return{vals:d,vecs:wantVec?a:null};
+}
+// Hermitian (re,im n×n) -> real symmetric 2n embedding
+function embed(re,im,n){const N=2*n,a=new Float64Array(N*N);
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const r=re[i*n+j],m=im[i*n+j];a[i*N+j]=r;a[(i+n)*N+j+n]=r;a[i*N+j+n]=-m;a[(i+n)*N+j]=m;}return a;}
+// Uhlmann decoding fidelity F(rho_RB, I/2 ⊗ rho_B). state re/im on NQ qubits; R = qR; B = list of qubits; rest = radiation.
+function decodeFidelity(re,im,NQ,qR,B){
+  const keep=[qR].concat(B),inK=new Set(keep),rad=[];for(let q=0;q<NQ;q++)if(!inK.has(q))rad.push(q);
+  const k=keep.length,dK=1<<k,dR=1<<rad.length,Xr=new Float64Array(dK*dR),Xi=new Float64Array(dK*dR);
+  for(let i=0;i<(1<<NQ);i++){let a=0,b=0;for(let t=0;t<k;t++)if(i>>keep[t]&1)a|=1<<t;for(let t=0;t<rad.length;t++)if(i>>rad[t]&1)b|=1<<t;Xr[a*dR+b]=re[i];Xi[a*dR+b]=im[i];}
+  const rr=new Float64Array(dK*dK),ri=new Float64Array(dK*dK);
+  for(let a=0;a<dK;a++)for(let c=a;c<dK;c++){let gr=0,gi=0;const oa=a*dR,oc=c*dR;for(let b=0;b<dR;b++){const xr=Xr[oa+b],xi=Xi[oa+b],yr=Xr[oc+b],yi=-Xi[oc+b];gr+=xr*yr-xi*yi;gi+=xr*yi+xi*yr;}
+    rr[a*dK+c]=gr;ri[a*dK+c]=gi;rr[c*dK+a]=gr;ri[c*dK+a]=-gi;}
+  // index a: bit0 = R, bits1.. = B. rho_B = trace over bit0.
+  const dB=dK>>1,br=new Float64Array(dB*dB),bi=new Float64Array(dB*dB);
+  for(let x=0;x<dB;x++)for(let y=0;y<dB;y++)for(let r=0;r<2;r++){br[x*dB+y]+=rr[((x<<1)|r)*dK+((y<<1)|r)];bi[x*dB+y]+=ri[((x<<1)|r)*dK+((y<<1)|r)];}
+  // sqrt(rho_B) via eigen of embedding
+  const NB2=2*dB,E=symEig(embed(br,bi,dB),NB2,true),V=E.vecs,lam=E.vals;
+  // build sqrt in embedded real form: S = V diag(sqrt) V^T (2dB x 2dB), then read complex block
+  const sr=new Float64Array(dB*dB),si=new Float64Array(dB*dB);
+  for(let i=0;i<dB;i++)for(let j=0;j<dB;j++){let s1=0,s2=0;for(let t=0;t<NB2;t++){const w=Math.sqrt(Math.max(lam[t],0));s1+=V[i*NB2+t]*w*V[j*NB2+t];s2+=V[(i+dB)*NB2+t]*w*V[j*NB2+t];}sr[i*dB+j]=s1;si[i*dB+j]=s2;}
+  // sqrt(sigma) = (1/sqrt2) I_R ⊗ sqrt(rho_B); K = sqrtσ ρ sqrtσ
+  const sq=(a,c)=>{const ra=a&1,rc=c&1;if(ra!==rc)return[0,0];return[sr[(a>>1)*dB+(c>>1)]*Math.SQRT1_2,si[(a>>1)*dB+(c>>1)]*Math.SQRT1_2];};
+  const Tr=new Float64Array(dK*dK),Ti=new Float64Array(dK*dK);
+  for(let a=0;a<dK;a++)for(let c=0;c<dK;c++){let xr=0,xi=0;for(let b=(c&1);b<dK;b+=2){const[s1,s2]=sq(b,c);if(!s1&&!s2)continue;const p=rr[a*dK+b],q=ri[a*dK+b];xr+=p*s1-q*s2;xi+=p*s2+q*s1;}Tr[a*dK+c]=xr;Ti[a*dK+c]=xi;}
+  const Kr=new Float64Array(dK*dK),Ki=new Float64Array(dK*dK);
+  for(let a=0;a<dK;a++)for(let c=0;c<dK;c++){let xr=0,xi=0;for(let b=(a&1);b<dK;b+=2){const[s1,s2]=sq(a,b);if(!s1&&!s2)continue;const p=Tr[b*dK+c],q=Ti[b*dK+c];xr+=s1*p-s2*q;xi+=s1*q+s2*p;}Kr[a*dK+c]=xr;Ki[a*dK+c]=xi;}
+  const ev=symEig(embed(Kr,Ki,dK),2*dK,false).vals;let tr=0;for(const v of ev)tr+=Math.sqrt(Math.max(v,0));tr/=2;
+  return tr*tr;
+}
+
+const W=680,H=440,Z0=-0.85,CS=0.4;
+function newState(){return{t:0,yaw:0.6,ripples:[],pairs:[],pulses:[],lastSpawn:-9};}
+const states={};VERS.forEach(v=>states[v.id]=newState());
+
+function proj(orient,st,S,Wd,Hd){
+  const c=Math.cos(st.yaw),s=Math.sin(st.yaw),sp=Math.sin(0.62),cp=Math.cos(0.62);
+  return (x,y,z)=>{const X=x*c-y*s,Y=x*s+y*c,d=1/(1+Y*0.18);
+    if(orient==='h')return[Wd/2+X*S*d,Hd*0.52+(Y*sp*S-z*cp*S)*d];
+    const ex=Wd/2+(z*1.05-0.05)*S*d+Y*0.3*S*d,ey=Hd/2+X*0.95*S*d;
+    return orient==='w'?[ex,ey]:[Wd-ex,ey];};
+}
+function vortRing(nv,t){const v=[];if(!nv)return v;const ring=nv>=5?nv-1:nv;if(nv>=5)v.push([0,0,1]);
+  for(let k=0;k<ring;k++){const a=k*2*Math.PI/ring+t*0.15;v.push([0.5*Math.cos(a),0.5*Math.sin(a),k%2?1:-1]);}return v;}
+function flow(x,y,D,Sw){const r2=Math.max(x*x+y*y,0.0009);return[(-D*x-Sw*y)/r2,(-D*y+Sw*x)/r2];}
+function makeField(ver,p,st){
+  const t=st.t;
+  if(ver.kind==='swirl')return(x,y)=>{const r=Math.hypot(x,y),tw=p.mag*0.09*Math.exp(-r*r*1.5)*Math.sin(t*0.6+r*3);
+    const c=Math.cos(tw),s=Math.sin(tw),xx=x*c-y*s,yy=x*s+y*c,n=p.mode;
+    let z=0.16*Math.sin(n*Math.PI*(xx+1)/2)*Math.sin(n*Math.PI*(yy+1)/2)*Math.cos(t*1.3);
+    for(let k=0;k<p.vor;k++){const a=k*2*Math.PI/p.vor+t*0.25,dx=xx-0.5*Math.cos(a),dy=yy-0.5*Math.sin(a),rr=Math.hypot(dx,dy);
+      z+=0.12*Math.sin(Math.atan2(dy,dx)*(k%2?1:-1)+rr*10-t*3)*Math.exp(-rr*3);}
+    return 0.75+z;};
+  if(ver.kind==='flux'){const V=vortRing(p.flux,t);return(x,y)=>{const n=p.mode;
+    let z=0.15*Math.sin(n*Math.PI*(x+1)/2)*Math.sin(n*Math.PI*(y+1)/2)*Math.cos(t*1.3);
+    for(const[vx,vy,sg]of V){const dx=x-vx,dy=y-vy,rr=Math.hypot(dx,dy);z+=0.12*Math.sin(sg*Math.atan2(dy,dx)+rr*10-t*3)*Math.exp(-rr*3)-0.1*Math.exp(-rr*rr*60);}
+    for(const q of st.pulses){const a=t-q.t0,amp=0.16*Math.exp(-a*0.5);z+=amp*Math.sin(q.k1*Math.PI*(x+1)/2+a)*Math.sin(q.k2*Math.PI*(y+1)/2)*Math.cos(a*3);}
+    return 0.75+z;};}
+  const D=ver.kind==='evap'?evapD(ver.id):ver.kind==='yk'?(6-p.k)/6*0.2+0.04:p.drain*0.025,rh=D/CS;
+  return(x,y)=>{const r=Math.hypot(x,y),n=p.mode;
+    let z=0.13*Math.sin(n*Math.PI*(x+1)/2)*Math.sin(n*Math.PI*(y+1)/2)*Math.cos(t*1.3)*(1-Math.exp(-r*r*8));
+    z-=D*9*Math.exp(-r*r/(rh*rh+0.03));return 0.75+z;};
+}
+
+function render(ctx,ver,p,st,o){
+  const Wd=o.W,Hd=o.H,S=150*Wd/680,P=proj(ver.orient,st,S,Wd,Hd),N=o.N,lw=o.lw;
+  const F=makeField(ver,p,st);
+  const line=(a,b,col,al,w)=>{ctx.strokeStyle=col;ctx.globalAlpha=al;ctx.lineWidth=w*lw;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();};
+  const dot=(q,col,al,r)=>{ctx.fillStyle=col;ctx.globalAlpha=al;ctx.beginPath();ctx.arc(q[0],q[1],r*lw,0,7);ctx.fill();};
+  ctx.clearRect(0,0,Wd,Hd);
+  let T=0,rh=0,re=0,D=0,Sw=0;
+  if(ver.kind==='drain'){D=p.drain*0.025;Sw=p.spin*0.025;rh=D/CS;re=Math.hypot(D,Sw)/CS;T=p.thermal?rh*10:0;}
+  if(ver.kind==='yk'){D=(6-p.k)/6*0.2+0.04;Sw=0.05;rh=D/CS;re=0;T=0;}
+  if(ver.kind==='evap'){D=evapD(ver.id);Sw=0.05;rh=D/CS;re=0;T=getEng(ver.id).bh.length?Math.min(8,0.45/(rh+0.04)):0;}
+  for(let i=-10;i<=10;i++){const f=1-Math.abs(i)/11,j=T*0.012,al=0.12+0.38*f*f,J=()=>(Math.random()-0.5)*j;
+    line(P(i*0.4+J(),-4,Z0),P(i*0.4+J(),4,Z0),C.teal,al,0.6);line(P(-4,i*0.4+J(),Z0),P(4,i*0.4+J(),Z0),C.teal,al,0.6);}
+  if(T>0)for(let k=0;k<T*(o.thumb?4:14);k++){dot(P((Math.random()-0.5)*3.2,(Math.random()-0.5)*3.2,Z0),Math.random()<0.5?C.coral:C.amber,0.25+Math.random()*0.5,1.2+Math.random()*1.5);}
+  const pts=[];for(let i=0;i<=N;i++){pts.push([]);for(let j=0;j<=N;j++){const x=-1+2*i/N,y=-1+2*j/N;pts[i].push([x,y,F(x,y)]);}}
+  const step=Math.max(2,Math.round(N/6));
+  for(let i=0;i<=N;i+=step)for(let j=0;j<=N;j+=step){const q=pts[i][j],ph=(Math.sin(st.t*2+i*0.7+j*0.5)+1)/2;line(P(q[0],q[1],Z0),P(q[0],q[1],Z0+(q[2]-Z0)*ph),C.teal,0.28,0.8);}
+  if(ver.kind==='swirl'){const b=p.mag;if(b)for(let k=0;k<12;k++){const az=k*Math.PI/6+st.t*0.05*b;let prev=null;
+    for(let s=0;s<=40;s++){const th=0.25+s*(Math.PI-0.5)/40,L=0.6+0.11*b,r=L*Math.sin(th)**2;
+      const q=P(r*Math.cos(az),r*Math.sin(az),0.75+r/Math.max(Math.sin(th),0.01)*Math.cos(th)*0.55);if(prev)line(prev,q,C.amber,0.18+0.05*b,1);prev=q;}}}
+  if(ver.kind==='flux'){
+    for(const q of st.pulses){const a=st.t-q.t0,amp=Math.exp(-a*0.5),src=P(q.u,q.v,Z0);let prev=null;
+      for(let s=0;s<=40;s++){const th=s*Math.PI/20,R=0.1+a*0.25,r2=P(q.u+R*Math.cos(th),q.v+R*Math.sin(th),Z0);if(prev)line(prev,r2,C.teal,0.7*amp,1.2);prev=r2;}
+      for(let i=0;i<=N;i+=step)for(let j=0;j<=N;j+=step)line(src,P(...pts[i][j]),C.tealHi,0.2*amp,0.6);}
+    for(const[vx,vy,sg]of vortRing(p.flux,st.t)){for(let k=0;k<3;k++){let prev=null;
+      for(let s=0;s<=50;s++){const z=Z0+s*(1.75-Z0)/50,ang=sg*z*9+k*2.094+st.t*1.5,q=P(vx+0.055*Math.cos(ang),vy+0.055*Math.sin(ang),z);if(prev)line(prev,q,C.amber,0.8,1);prev=q;}}
+      line(P(vx,vy,Z0),P(vx,vy,1.75),C.core,0.55,0.6);}}
+  for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const q=pts[i][j],a=P(...q),r=Math.hypot(q[0],q[1]);
+    const col=(rh&&r<rh)?C.inner:(q[2]>0.8?C.fieldHi:C.field);
+    if(i<N)line(a,P(...pts[i+1][j]),col,0.6,0.9);if(j<N)line(a,P(...pts[i][j+1]),col,0.6,0.9);}
+  if(ver.kind==='yk'){
+    if(rh>0.02){let prev=null;for(let s=0;s<=60;s++){const a=s*6.283/60,q=P(rh*Math.cos(a),rh*Math.sin(a),F(rh,0));if(prev)line(prev,q,C.red,0.95,1.8);prev=q;}}
+    const res=ykCompute()[p.k-1],m=ykMsg(),bi=blochOf(m),bo=ykOutput(res,m.ar,m.ai,m.br,m.bi),fm=(1+bi.x*bo.x+bi.y*bo.y+bi.z*bo.z)/2;
+    const Mc=[-1.05,1.05],mir=P(Mc[0],Mc[1],Z0);
+    let prev=null;for(let s=0;s<=40;s++){const a=s*Math.PI/20,q=P(Mc[0]+0.32*Math.cos(a),Mc[1]+0.32*Math.sin(a),Z0);if(prev)line(prev,q,C.tealHi,0.9,1.4);prev=q;}
+    for(let j=0;j<5;j++){const a=j*1.2566+st.t*0.4;dot(P(Mc[0]+0.16*Math.cos(a),Mc[1]+0.16*Math.sin(a),Z0),C.tealHi,0.8,1.6);}
+    for(let j=0;j<p.k;j++){const a=-0.4+j*0.42,pt=[Mc[0]+0.85*Math.cos(a),Mc[1]-0.85*Math.sin(a)],q=P(pt[0],pt[1],Z0),hz=P(0.6*rh*Math.cos(a),0.6*rh*Math.sin(a),F(0,0));
+      line(hz,q,C.coral,0.25,0.8);ctx.setLineDash([3*lw,3*lw]);line(q,mir,C.tealHi,0.6,1);ctx.setLineDash([]);dot(q,C.coral,0.95,2.6);}
+    dot(P(0,0,F(0,0)),C.amber,0.35,2.4);
+    const lift=0.12+0.35*(0.5+0.5*Math.sin(st.t*1.5));dot(P(Mc[0],Mc[1],Z0+lift*fm),C.amber,Math.max(0.15,fm),3.4);
+  }
+  if(ver.kind==='evap'){
+    if(rh>0.02){let prev=null;for(let s=0;s<=60;s++){const a=s*6.283/60,q=P(rh*Math.cos(a),rh*Math.sin(a),F(rh,0));if(prev)line(prev,q,C.red,0.95,1.8);prev=q;}}
+    st.pairs=st.pairs.filter(q=>q.life<3.2);
+    for(const q of st.pairs){q.life+=o.dt;const k=Math.min(1,q.life/2.4),e=k*k*(3-2*k);
+      const x=q.x0*(1-e)+q.x1*e,y=q.y0*(1-e)+q.y1*e,z=q.z0*(1-e)+Z0*e;dot(P(x,y,z),C.coral,0.95*(1-Math.max(0,q.life-2.4)/0.8),2.2);}
+    const E=getEng(ver.id);
+    if(ver.island&&rh>0.02){const rq=0.85*rh,on=islandOn(E),ring=[];
+      for(let s=0;s<=48;s++){const a=s*6.283/48;ring.push(P(rq*Math.cos(a),rq*Math.sin(a),F(rq*Math.cos(a),rq*Math.sin(a))));}
+      if(on){ctx.fillStyle=C.tealHi;ctx.globalAlpha=0.22+0.06*Math.sin(st.t*2);ctx.beginPath();ring.forEach((q,i)=>i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]));ctx.fill();
+        for(let s=0;s<48;s++)line(ring[s],ring[s+1],C.tealHi,0.95,1.6);
+        ctx.setLineDash([3*lw,4*lw]);for(let k=0;k<8;k++){const a=k*0.785+st.t*0.1;line(P(rq*Math.cos(a),rq*Math.sin(a),F(rq*Math.cos(a),rq*Math.sin(a))),P(1.35*Math.cos(a),1.35*Math.sin(a),Z0),C.tealHi,0.35,0.8);}ctx.setLineDash([]);}
+      else{ctx.setLineDash([2*lw,4*lw]);for(let s=0;s<48;s++)line(ring[s],ring[s+1],C.tealHi,0.35,0.8);ctx.setLineDash([]);}}
+    if(ver.cut&&!o.thumb&&st.cutRes&&E.bh.length){const c=st.cutRes,L=Math.max(1,c.layers),R0=Math.max(rh,0.3)*0.92;
+      const pos=c.nodes.map(nd=>{const a=nd.q*6.2832/14+0.2,r=R0*(nd.layer+1)/L,x=r*Math.cos(a),y=r*Math.sin(a);return P(x,y,F(x,y)+0.02);});
+      const side=new Uint8Array(c.nodes.length);c.island.forEach(i=>side[i]=1);
+      c.nodes.forEach((nd,i)=>dot(pos[i],side[i]?C.tealHi:C.field,side[i]?0.85:0.4,side[i]?1.5:1));
+      for(const[u,v]of c.cutEdges){if(u>=0&&v>=0)line(pos[u],pos[v],C.coral,0.95,1.8);else if(u>=0||v>=0)dot(pos[u>=0?u:v],C.coral,0.95,2.4);}}
+    if(st.msg){const a=st.t-st.msg.t0,k=Math.min(1,a/1.6),e=k*k;if(a<2){const x=-1.3*(1-e),y=1.3*(1-e),z=Z0*(1-e)+F(0,0)*e;dot(P(x,y,z),C.amber,1-Math.max(0,a-1.6)/0.4,3);}}
+    const I=E.hist[E.hist.length-1].I;
+    if(E.thrown&&I>0.05){const cxy=[-1.3,1.3],R=0.08+0.22*I/2;let prev=null;
+      for(let s=0;s<=40;s++){const a=s*Math.PI/20+st.t*0.6,q=P(cxy[0]+R*Math.cos(a),cxy[1]+R*Math.sin(a),Z0);if(prev)line(prev,q,C.amber,0.3+0.6*I/2,1.6);prev=q;}
+      dot(P(cxy[0],cxy[1],Z0),C.amber,0.4*I/2+0.2,2.6);}
+  }
+  if(ver.kind==='drain'){
+    const circ=(R,col,al,w,dash)=>{ctx.setLineDash(dash.map(x=>x*lw));let prev=null;for(let s=0;s<=60;s++){const a=s*6.283/60,q=P(R*Math.cos(a),R*Math.sin(a),F(R,0));if(prev)line(prev,q,col,al,w);prev=q;}ctx.setLineDash([]);};
+    if(re>0.02)circ(re,C.amber,0.85,1.2,[5,4]);if(rh>0.02)circ(rh,C.red,0.95,1.8,[]);
+    if(!o.thumb||st.ripples.length===0){if(st.t-st.lastSpawn>2.2){spawnRipple(st);st.lastSpawn=st.t;}}
+    for(const rp of st.ripples){rp.age+=o.dt;for(const q of rp.pts){if(!q.alive)continue;const v=flow(q.x,q.y,D,Sw);
+      q.x+=(v[0]+CS*q.dx)*o.dt;q.y+=(v[1]+CS*q.dy)*o.dt;const r=Math.hypot(q.x,q.y);
+      if(Math.abs(q.x)>1||Math.abs(q.y)>1||r<0.04){q.alive=false;continue;}
+      const red=rh>0?Math.max(0,Math.min(1,(r-rh)/0.25)):1;dot(P(q.x,q.y,F(q.x,q.y)),C.tealHi,(0.25+0.7*red)*Math.max(0,1-rp.age/12),1.4+red);}}
+    if(p.thermal&&rh>0.03&&Math.random()<0.25){const a=Math.random()*6.283;
+      st.pairs.push({x:(rh+0.015)*Math.cos(a),y:(rh+0.015)*Math.sin(a),d:1,life:0},{x:(rh-0.015)*Math.cos(a),y:(rh-0.015)*Math.sin(a),d:-1,life:0});}
+    st.pairs=st.pairs.filter(q=>q.life<4);
+    for(const q of st.pairs){q.life+=o.dt;const r=Math.max(Math.hypot(q.x,q.y),0.02),v=flow(q.x,q.y,D,Sw);
+      q.x+=(v[0]+q.d*CS*q.x/r)*o.dt;q.y+=(v[1]+q.d*CS*q.y/r)*o.dt;if(Math.hypot(q.x,q.y)<0.04)q.life=9;
+      dot(P(q.x,q.y,F(q.x,q.y)),C.coral,0.9*Math.max(0,1-q.life/4),1.8);}
+  }
+  ctx.globalAlpha=1;
+  return{rh,re,T,P};
+}
+function spawnRipple(st){const a=Math.random()*6.283,r=0.45+Math.random()*0.45,x0=r*Math.cos(a),y0=r*Math.sin(a),pts=[];
+  for(let k=0;k<36;k++){const th=k*6.283/36;pts.push({x:x0,y:y0,dx:Math.cos(th),dy:Math.sin(th),alive:true});}
+  st.ripples.push({pts,age:0});if(st.ripples.length>5)st.ripples.shift();}
+function addPulse(st,u,v){st.pulses.push({u,v,t0:st.t,k1:1+Math.floor(Math.abs(u)*2.7)%5,k2:1+Math.floor(Math.abs(v)*2.7)%5});if(st.pulses.length>4)st.pulses.shift();}
+
+const main=document.getElementById('main'),mctx=main.getContext('2d');
+let cur=VERS[3],paused=false,lastInfo=null;
+function sizeMain(){const w=main.clientWidth||680,dpr=window.devicePixelRatio||1;main.width=Math.round(w*dpr);main.height=Math.round(w*H/W*dpr);mctx.setTransform(main.width/W,0,0,main.height/H,0,0);}
+window.addEventListener('resize',sizeMain);
+
+const list=document.getElementById('verlist'),thumbs=[];
+VERS.forEach(v=>{const li=document.createElement('li'),b=document.createElement('button');b.className='ver';b.id='ver-'+v.id;b.type='button';
+  b.innerHTML=`<canvas width="128" height="82" aria-hidden="true"></canvas><span><span class="vn">${v.id}</span><br><span class="vt">${v.name}</span></span>`;
+  b.addEventListener('click',()=>select(v.id,true));li.appendChild(b);list.appendChild(li);
+  const cv=b.querySelector('canvas'),cx=cv.getContext('2d');cx.setTransform(2,0,0,2,0,0);
+  const st=newState();st.t=2+Math.random();thumbs.push({v,cx,st});});
+
+const controls=document.getElementById('controls'),legend=document.getElementById('legend'),stats=document.getElementById('stats');
+function buildUI(){
+  const p=params[cur.id];controls.innerHTML='';
+  cur.ctls.forEach(([k,lab,mn,mx])=>{const d=document.createElement('div');d.className='ctl';const id=cur.id+'-'+k;
+    d.innerHTML=`<label for="${id}">${lab}</label><input type="range" id="${id}" min="${mn}" max="${mx}" step="1" value="${p[k]}"><output for="${id}">${p[k]}</output>`;
+    const inp=d.querySelector('input'),out=d.querySelector('output');inp.addEventListener('input',()=>{p[k]=+inp.value;out.textContent=inp.value;if(cur.kind==='evap'&&k==='depth')getEng().depth=p.depth;if(cur.kind==='yk'){drawPage();updYK();}});controls.appendChild(d);});
+  const extra=document.createElement('div');extra.className='btns';
+  if(cur.chk){const id=cur.id+'-'+cur.chk[0];const l=document.createElement('label');l.className='chk';l.innerHTML=`<input type="checkbox" id="${id}" ${p[cur.chk[0]]?'checked':''}>${cur.chk[1]}`;
+    l.querySelector('input').addEventListener('change',e=>p[cur.chk[0]]=e.target.checked?1:0);extra.appendChild(l);}
+  if(cur.kind==='flux'){const b=document.createElement('button');b.className='btn';b.id='v3-pulse';b.textContent='Pulse the boundary';b.addEventListener('click',()=>addPulse(states.v3,Math.random()*3-1.5,Math.random()*3-1.5));extra.appendChild(b);
+    const h=document.createElement('span');h.className='hint';h.textContent='Or click the green plane.';extra.appendChild(h);}
+  if(cur.kind==='drain'){const b=document.createElement('button');b.className='btn';b.id='v4-fire';b.textContent='Fire test ripple';b.addEventListener('click',()=>spawnRipple(states.v4));extra.appendChild(b);}
+  if(cur.kind==='yk'){const l=document.createElement('label');l.className='chk';l.htmlFor='v9-msg';l.textContent='Message';
+    const sel=document.createElement('select');sel.id='v9-msg';sel.className='btn';Object.entries(MSGS).forEach(([k2,v])=>{const o=document.createElement('option');o.value=k2;o.textContent=v[0];if(k2===p.msg)o.selected=true;sel.appendChild(o);});
+    sel.addEventListener('change',()=>{p.msg=sel.value;drawPage();updYK();});extra.appendChild(l);extra.appendChild(sel);
+    const b=document.createElement('button');b.className='btn';b.id='v9-reset';b.type='button';b.textContent='New circuit';b.addEventListener('click',()=>{p.seed++;drawPage();updYK();flash('New random circuit, seed '+p.seed+'.');});extra.appendChild(b);}
+  if(cur.kind==='evap'){
+    const mk=(id,txt,fn)=>{const b=document.createElement('button');b.className='btn';b.id=id;b.type='button';b.textContent=txt;b.addEventListener('click',fn);extra.appendChild(b);return b;};
+    mk('v5-emit','Radiate one qubit',doEmit);
+    const ab=mk('v5-auto',auto?'Stop':'Run evaporation',()=>auto?autoStop():autoStart());if(auto)ab.classList.add('on');
+    mk('v5-throw','Throw message in',doThrow);
+    mk('v5-reset','New circuit',doReset);
+  }
+  if(extra.childNodes.length)controls.appendChild(extra);
+  legend.innerHTML=cur.legend.map(([n,c,d])=>`<span><i class="${d?'dot':''}" style="background:${c}"></i>${n}</span>`).join('');
+  stats.hidden=cur.kind!=='drain'&&cur.kind!=='evap'&&cur.kind!=='yk';
+  document.getElementById('pagepanel').hidden=cur.kind!=='evap'&&cur.kind!=='yk';
+  if(cur.kind==='yk'){stats.innerHTML=`<div class="stat"><div class="k">Bell check passes</div><div class="v" id="y-p">–</div><div class="f">success probability · 25% at full scrambling</div></div><div class="stat"><div class="k">Teleported fidelity</div><div class="v" id="y-f">–</div><div class="f">entanglement fidelity · 1 is perfect</div></div><div class="stat"><div class="k">Your message out</div><div class="v" id="y-m">–</div><div class="f" id="y-mn">fidelity with the message sent</div></div><div class="stat"><div class="k">Paper’s formula</div><div class="v" id="y-pr">–</div><div class="f">1 / (4P), predicted fidelity</div></div>`;
+    document.getElementById('pp-key').innerHTML='<i style="background:var(--violet)"></i>Teleported fidelity <i style="background:var(--amber)"></i>Your message <i style="background:var(--coral)"></i>Bell check passes (right axis)';
+    document.querySelector('.pp-title').textContent='The message, teleported out of the radiation';sizePage();updYK();}
+  if(cur.kind==='evap'){stats.innerHTML=`<div class="stat"><div class="k">Qubits in hole</div><div class="v" id="e-bh">0</div><div class="f">starts at 13, +1 for a message</div></div><div class="stat"><div class="k">Qubits radiated</div><div class="v" id="e-n">0</div><div class="f" id="e-page">before Page time</div></div><div class="stat"><div class="k">Radiation entropy</div><div class="v" id="e-s">0</div><div class="f">S₂ in bits, exact state</div></div><div class="stat"><div class="k">Message recovered</div><div class="v" id="e-i">–</div><div class="f" id="e-seed">I₂(R : radiation) / 2</div></div>`;
+    if(cur.island)stats.innerHTML+=`<div class="stat"><div class="k">Winning saddle</div><div class="v" id="e-sad">no island</div><div class="f">smaller generalized entropy</div></div><div class="stat"><div class="k">Largest gap from formula</div><div class="v" id="e-gap">0.00</div><div class="f">bits · ≈1 expected at Page time</div></div>`;
+    if(cur.cut&&!cur.decode)stats.innerHTML+=`<div class="stat"><div class="k">Minimal cut</div><div class="v" id="e-cut">0</div><div class="f">bits · upper bound on entropy</div></div><div class="stat"><div class="k">Island</div><div class="v" id="e-isl">none</div><div class="f">gates on the radiation’s side</div></div><div class="stat"><div class="k">Cut sits</div><div class="v" id="e-lag">–</div><div class="f">gate layers behind now</div></div>`;
+    if(cur.decode)stats.innerHTML+=`<div class="stat"><div class="k">Decoder fidelity</div><div class="v" id="e-F">–</div><div class="f">0.25 is guessing, 1 is perfect</div></div><div class="stat"><div class="k">Any message state</div><div class="v" id="e-Fa">–</div><div class="f">average fidelity, (2F + 1) / 3</div></div>`;
+    document.getElementById('pp-key').innerHTML=cur.decode?'<i style="background:var(--violet)"></i>Computed S₂ <i style="background:var(--teal)"></i>Minimal cut <i style="background:var(--amber)"></i>Information present, I₂/2 <i style="background:var(--coral)"></i>Decoder fidelity (right axis)':cur.cut?'<i style="background:var(--violet)"></i>Computed S₂ <i style="background:var(--teal)"></i>Minimal cut through the circuit <i class="dash"></i>Hawking’s prediction <i style="background:var(--amber)"></i>Message (right axis)':cur.island?'<i style="background:var(--violet)"></i>Computed S₂ <i class="dash"></i>No-island saddle <i class="dash teal"></i>Island saddle <i class="band"></i>Island formula (minimum) <i style="background:var(--amber)"></i>Message (right axis)':'<i style="background:var(--violet)"></i>Radiation entropy S₂ <i class="dash"></i>Hawking’s prediction <i style="background:var(--amber)"></i>Message recovered (right axis)';
+    document.querySelector('.pp-title').textContent=cur.decode?'Reading the message back out':cur.cut?'Minimal cut against the computed curve':cur.island?'Island formula against the computed curve':'Page curve, computed live';
+    sizePage();updStats();}
+  if(cur.kind==='drain')stats.innerHTML=`<div class="stat"><div class="k">Horizon radius</div><div class="v" id="s-rh">0</div><div class="f">r_h = D / c</div></div><div class="stat"><div class="k">Ergoregion radius</div><div class="v" id="s-re">0</div><div class="f">r_e = √(D² + S²) / c</div></div><div class="stat"><div class="k">Boundary temperature</div><div class="v" id="s-t">0</div><div class="f">arbitrary units · c = ${CS}</div></div>`;
+  main.style.cursor=cur.kind==='flux'?'crosshair':'default';
+  document.getElementById('badge').innerHTML=`<b>${cur.id}</b> · ${cur.name}`;
+  document.getElementById('n-title').textContent=cur.name;
+  document.getElementById('n-changed').textContent=cur.changed;
+  document.getElementById('n-est').innerHTML=cur.est.map(s=>`<li>${s}</li>`).join('');
+  document.getElementById('n-int').innerHTML=cur.int.map(s=>`<li>${s}</li>`).join('');
+  VERS.forEach(v=>document.getElementById('ver-'+v.id).setAttribute('aria-current',v===cur?'true':'false'));
+}
+let auto=null;
+function flash(m){const t=document.getElementById('toast');t.textContent=m;clearTimeout(flash.h);flash.h=setTimeout(()=>t.textContent='',2600);}
+function doEmit(){const E=getEng();if(!E.bh.length){autoStop();flash('The hole has fully evaporated. Start a new circuit to run again.');return;}
+  const rh=evapD(cur.id)/CS;const rec=E.emit();const a=Math.random()*6.283,id=cur.id;
+  if(cur.cut){const c=circuitCut(E.log,E.bh,maxflow);rec.C=c.cut;states[id].cutRes=c;}
+  if(cur.decode&&E.thrown&&E.bh.length+1<=8){rec.Fpending=true;setTimeout(()=>{rec.F=decodeFidelity(E.re,E.im,NQ,QR,E.bh.slice());rec.Fpending=false;if(cur.id===id){drawPage();updStats();}},40);}
+  states[cur.id].pairs.push({x0:rh*Math.cos(a),y0:rh*Math.sin(a),z0:0.6,x1:1.3*Math.cos(a)+(Math.random()-0.5),y1:1.3*Math.sin(a)+(Math.random()-0.5),life:0});
+  drawPage();updStats();if(!E.bh.length)autoStop();}
+function doThrow(){const E=getEng();if(E.thrown){flash('The message is already inside.');return;}if(!E.bh.length){flash('There is no hole left to throw it into.');return;}
+  E.throwMessage();states[cur.id].msg={t0:states[cur.id].t};drawPage();updStats();flash('Message thrown in at '+E.throwAt+' qubits radiated.');}
+function doReset(){autoStop();const pr=params[cur.id];pr.seed++;engs[cur.id]=new QEngine(pr.seed,pr.depth);states[cur.id].pairs=[];states[cur.id].msg=null;states[cur.id].cutRes=null;drawPage();updStats();flash('New random circuit, seed '+pr.seed+'.');}
+function autoStart(){if(auto)return;if(!getEng().bh.length){flash('Start a new circuit first.');return;}auto=setInterval(doEmit,1100);const b=document.getElementById('v5-auto');if(b){b.textContent='Stop';b.classList.add('on');}}
+function autoStop(){if(auto){clearInterval(auto);auto=null;}const b=document.getElementById('v5-auto');if(b){b.textContent='Run evaporation';b.classList.remove('on');}}
+function pageIdx(E){const h=E.hist.find(r=>r.n>=r.bh&&r.n>0);return h?h.n:null;}
+function updStats(){if(cur.kind!=='evap')return;const E=getEng(),last=E.hist[E.hist.length-1],pt=pageIdx(E);
+  const g=id=>document.getElementById(id);if(!g('e-bh'))return;
+  g('e-bh').textContent=E.bh.length;g('e-n').textContent=E.rad.length;g('e-s').textContent=last.S.toFixed(2);
+  g('e-page').textContent=pt===null?'before Page time':'Page time passed at '+pt;
+  if(cur.island&&g('e-sad')){g('e-sad').textContent=islandOn(E)?'island':'no island';g('e-gap').textContent=Math.max(...E.hist.map(r=>Math.abs(r.S-Math.min(r.n,r.bh)))).toFixed(2);}
+  const c=states[cur.id].cutRes;
+  if(g('e-cut')){g('e-cut').textContent=last.C!==undefined?last.C:0;g('e-isl').textContent=c&&c.island.length?c.island.length+' of '+c.nodes.length:'none';
+    if(c&&c.island.length){const ls=c.cutEdges.flatMap(([u,v])=>[u,v]).filter(x=>x>=0).map(x=>c.nodes[x].layer);g('e-lag').textContent=ls.length?(c.layers-1-Math.min(...ls)):'0';}else g('e-lag').textContent='on radiation';}
+  if(g('e-F')){let txt='–',ta='–';if(E.thrown){const fr=[...E.hist].reverse().find(r=>r.n>=E.throwAt&&(r.F!==undefined||r.Fpending));
+      if(fr&&fr.Fpending)txt=ta='computing';else if(fr&&fr.F!==undefined){txt=fr.F.toFixed(3);ta=((2*fr.F+1)/3).toFixed(3);}else if(E.throwAt===E.rad.length){txt='0.250';ta='0.500';}else txt=ta='hole too large';}
+    else txt=ta='not thrown';g('e-F').textContent=txt;g('e-Fa').textContent=ta;}
+  g('e-i').textContent=E.thrown?Math.round(last.I/2*100)+'%':'not thrown';g('e-seed').textContent='I₂(R : radiation) / 2 · seed '+params[cur.id].seed;}
+const pc=document.getElementById('pagec'),pctx=pc.getContext('2d'),PW=680,PH=220;
+function sizePage(){const w=pc.clientWidth||680,dpr=window.devicePixelRatio||1;pc.width=Math.round(w*dpr);pc.height=Math.round(w*PH/PW*dpr);pctx.setTransform(pc.width/PW,0,0,pc.height/PH,0,0);drawPage();}
+window.addEventListener('resize',()=>{if(cur.kind==='evap'||cur.kind==='yk')sizePage();});
+function drawPage(){
+  if(cur.kind==='yk'){drawYK();return;}
+  if(cur.kind!=='evap')return;const E=getEng(),cs=getComputedStyle(document.documentElement),tok=n=>cs.getPropertyValue(n).trim();
+  const L=40,R=PW-46,T=12,B=PH-34,xm=14,ym=8,X=n=>L+(R-L)*n/xm,Y=s=>B-(B-T)*s/ym,Y2=i=>B-(B-T)*i/2;
+  pctx.clearRect(0,0,PW,PH);pctx.font='11px "IBM Plex Mono",ui-monospace,monospace';pctx.lineWidth=1;
+  for(let s=0;s<=8;s+=2){pctx.strokeStyle=tok('--line');pctx.globalAlpha=1;pctx.beginPath();pctx.moveTo(L,Y(s));pctx.lineTo(R,Y(s));pctx.stroke();
+    pctx.fillStyle=tok('--muted');pctx.textAlign='right';pctx.fillText(s,L-6,Y(s)+4);}
+  pctx.fillStyle=tok('--amber');pctx.textAlign='left';for(const i of[0,1,2])pctx.fillText(cur.decode?['0','0.5','1'][i]:i,R+6,Y2(i)+4);
+  pctx.fillStyle=tok('--muted');pctx.textAlign='center';for(let n=0;n<=14;n+=2)pctx.fillText(n,X(n),B+15);
+  pctx.fillText('qubits radiated',(L+R)/2,B+29);
+  pctx.save();pctx.translate(12,(T+B)/2);pctx.rotate(-Math.PI/2);pctx.fillText('bits',0,0);pctx.restore();
+  const pt=pageIdx(E);
+  const vmark=(n,col,lab)=>{pctx.setLineDash([3,3]);pctx.strokeStyle=col;pctx.beginPath();pctx.moveTo(X(n),T);pctx.lineTo(X(n),B);pctx.stroke();pctx.setLineDash([]);pctx.fillStyle=col;pctx.textAlign='left';pctx.fillText(lab,X(n)+4,T+10);};
+  if(pt!==null)vmark(pt,tok('--teal'),'Page time');
+  if(E.thrown)vmark(E.throwAt,tok('--amber'),E.throwAt===pt?'':'message in');
+  const total=E.rad.length+E.bh.length;
+  if(cur.island){const pts=[];for(let n=0;n<=total;n++)pts.push([X(n),Y(Math.min(n,total-n,ym))]);
+    pctx.strokeStyle=tok('--violet');pctx.globalAlpha=0.28;pctx.lineWidth=9;pctx.lineJoin='round';pctx.beginPath();pts.forEach((q,i)=>i?pctx.lineTo(q[0],q[1]):pctx.moveTo(q[0],q[1]));pctx.stroke();pctx.globalAlpha=1;
+    const n0=Math.max(0,total-ym);pctx.setLineDash([5,4]);pctx.strokeStyle=tok('--teal');pctx.lineWidth=1.2;pctx.beginPath();pctx.moveTo(X(n0),Y(total-n0));pctx.lineTo(X(total),Y(0));pctx.stroke();pctx.setLineDash([]);}
+  pctx.setLineDash([5,4]);pctx.strokeStyle=tok('--muted');pctx.lineWidth=1.2;pctx.beginPath();pctx.moveTo(X(0),Y(0));pctx.lineTo(X(Math.min(total,8)),Y(Math.min(total,8)));pctx.stroke();pctx.setLineDash([]);
+  pctx.strokeStyle=tok('--violet');pctx.lineWidth=2;pctx.beginPath();E.hist.forEach((r,i)=>i?pctx.lineTo(X(r.n),Y(r.S)):pctx.moveTo(X(r.n),Y(r.S)));pctx.stroke();
+  pctx.fillStyle=tok('--violet');E.hist.forEach(r=>{pctx.beginPath();pctx.arc(X(r.n),Y(r.S),2.6,0,7);pctx.fill();});
+  if(E.thrown){const hs=E.hist.filter(r=>r.n>=E.throwAt);pctx.strokeStyle=tok('--amber');pctx.lineWidth=2;pctx.beginPath();
+    hs.forEach((r,i)=>{const yy=Y2(r.n===E.throwAt&&r.I===0?0:r.I);i?pctx.lineTo(X(r.n),yy):pctx.moveTo(X(r.n),yy);});pctx.stroke();
+    pctx.fillStyle=tok('--amber');hs.forEach(r=>{pctx.beginPath();pctx.arc(X(r.n),Y2(r.I),2.4,0,7);pctx.fill();});}
+  if(cur.cut){const hs=E.hist.filter(r=>r.n===0||r.C!==undefined);pctx.strokeStyle=tok('--teal');pctx.lineWidth=1.6;pctx.beginPath();
+    hs.forEach((r,i)=>{const v=r.n===0?0:r.C;i?pctx.lineTo(X(r.n),Y(v)):pctx.moveTo(X(r.n),Y(v));});pctx.stroke();
+    pctx.fillStyle=tok('--teal');hs.forEach(r=>{const v=r.n===0?0:r.C;pctx.fillRect(X(r.n)-2.5,Y(v)-2.5,5,5);});}
+  if(cur.decode&&E.thrown){pctx.setLineDash([2,4]);pctx.strokeStyle=tok('--coral');pctx.lineWidth=1;pctx.beginPath();pctx.moveTo(X(E.throwAt),Y2(0.5));pctx.lineTo(R,Y2(0.5));pctx.stroke();pctx.setLineDash([]);
+    pctx.fillStyle=tok('--coral');pctx.textAlign='right';pctx.fillText('guessing',R-4,Y2(0.5)-5);
+    const fp=[[E.throwAt,0.25]].concat(E.hist.filter(r=>r.F!==undefined).map(r=>[r.n,r.F]));
+    pctx.strokeStyle=tok('--coral');pctx.lineWidth=2.4;pctx.beginPath();fp.forEach(([n,f],i)=>i?pctx.lineTo(X(n),Y2(f*2)):pctx.moveTo(X(n),Y2(f*2)));pctx.stroke();
+    pctx.fillStyle=tok('--coral');fp.forEach(([n,f])=>{pctx.beginPath();pctx.arc(X(n),Y2(f*2),3,0,7);pctx.fill();});}
+  if(E.hist.length===1){pctx.fillStyle=tok('--muted');pctx.textAlign='center';pctx.fillText('Radiate qubits or run evaporation to draw the curve.',(L+R)/2,(T+B)/2);}
+}
+function ykNow(){const p=params.v9,res=ykCompute(),m=ykMsg(),bi=blochOf(m);return res.map(r=>{const bo=ykOutput(r,m.ar,m.ai,m.br,m.bi);return{P:r.P,F:r.F,bo,fm:(1+bi.x*bo.x+bi.y*bo.y+bi.z*bo.z)/2};});}
+function updYK(){if(cur.kind!=='yk')return;const g=id=>document.getElementById(id);if(!g('y-p'))return;const p=params.v9,r=ykNow()[p.k-1];
+  g('y-p').textContent=Math.round(r.P*100)+'%';g('y-f').textContent=r.F.toFixed(3);g('y-m').textContent=r.fm.toFixed(3);g('y-mn').textContent='fidelity with '+ykMsg().name+' · seed '+p.seed;g('y-pr').textContent=Math.min(1,1/(4*r.P)).toFixed(3);}
+function drawYK(){
+  const cs=getComputedStyle(document.documentElement),tok=n=>cs.getPropertyValue(n).trim(),p=params.v9,rows=ykNow(),m=ykMsg(),bi=blochOf(m);
+  const L=40,R=430,T=14,B=PH-34,X=k=>L+(R-L)*(k-1)/4,Y=v=>B-(B-T)*v;
+  pctx.clearRect(0,0,PW,PH);pctx.font='11px "IBM Plex Mono",ui-monospace,monospace';pctx.lineWidth=1;pctx.globalAlpha=1;
+  for(const v of[0,0.25,0.5,0.75,1]){pctx.strokeStyle=tok('--line');pctx.beginPath();pctx.moveTo(L,Y(v));pctx.lineTo(R,Y(v));pctx.stroke();
+    pctx.fillStyle=tok('--muted');pctx.textAlign='right';pctx.fillText(v,L-6,Y(v)+4);pctx.fillStyle=tok('--coral');pctx.textAlign='left';pctx.fillText(v,R+6,Y(v)+4);}
+  pctx.fillStyle=tok('--muted');pctx.textAlign='center';for(let k=1;k<=5;k++)pctx.fillText(k,X(k),B+15);pctx.fillText('radiated qubits collected',(L+R)/2,B+29);
+  pctx.setLineDash([3,3]);pctx.strokeStyle=tok('--violet');pctx.beginPath();pctx.moveTo(X(p.k),T);pctx.lineTo(X(p.k),B);pctx.stroke();pctx.setLineDash([]);
+  const ser=(f,col,w)=>{pctx.strokeStyle=col;pctx.lineWidth=w;pctx.beginPath();rows.forEach((r,i)=>i?pctx.lineTo(X(i+1),Y(f(r))):pctx.moveTo(X(i+1),Y(f(r))));pctx.stroke();pctx.fillStyle=col;rows.forEach((r,i)=>{pctx.beginPath();pctx.arc(X(i+1),Y(f(r)),3,0,7);pctx.fill();});};
+  ser(r=>r.P,tok('--coral'),1.6);ser(r=>r.F,tok('--violet'),2.2);ser(r=>r.fm,tok('--amber'),2.2);
+  const cx=560,cy=106,rr=78;pctx.strokeStyle=tok('--line');pctx.lineWidth=1;pctx.beginPath();pctx.arc(cx,cy,rr,0,7);pctx.stroke();
+  pctx.beginPath();pctx.ellipse(cx,cy,rr,rr*0.28,0,0,7);pctx.stroke();pctx.beginPath();pctx.moveTo(cx,cy-rr);pctx.lineTo(cx,cy+rr);pctx.stroke();
+  pctx.fillStyle=tok('--muted');pctx.textAlign='center';pctx.fillText('|0⟩',cx,cy-rr-4);pctx.fillText('|1⟩',cx,cy+rr+13);
+  const proj=v=>[cx+rr*(v.y-0.42*v.x),cy-rr*(v.z-0.2*v.x)];
+  const arrow=(v,col,w,lab)=>{const q=proj(v);pctx.strokeStyle=col;pctx.lineWidth=w;pctx.beginPath();pctx.moveTo(cx,cy);pctx.lineTo(q[0],q[1]);pctx.stroke();pctx.fillStyle=col;pctx.beginPath();pctx.arc(q[0],q[1],4,0,7);pctx.fill();pctx.textAlign='left';pctx.fillText(lab,q[0]+7,q[1]+4);};
+  const bo=rows[p.k-1].bo;arrow(bi,tok('--amber'),2,'sent');arrow(bo,tok('--teal'),2,'out');
+  pctx.fillStyle=tok('--muted');pctx.textAlign='center';pctx.fillText('Bloch sphere · k = '+p.k,cx,PH-6);
+}
+function select(id,push){const v=VERS.find(x=>x.id===id);if(!v)return;if(v!==cur)autoStop();cur=v;buildUI();if(push&&location.hash!=='#'+id)location.hash=id;}
+window.addEventListener('hashchange',()=>select(location.hash.slice(1),false));
+
+main.addEventListener('click',e=>{if(cur.kind!=='flux'||!lastInfo)return;const r=main.getBoundingClientRect(),mx=(e.clientX-r.left)*W/r.width,my=(e.clientY-r.top)*H/r.height;
+  let best=[0,0],bd=1e9;for(let u=-1.6;u<=1.6;u+=0.08)for(let v=-1.6;v<=1.6;v+=0.08){const q=lastInfo.P(u,v,Z0),d=(q[0]-mx)**2+(q[1]-my)**2;if(d<bd){bd=d;best=[u,v];}}
+  addPulse(states.v3,best[0],best[1]);});
+
+document.getElementById('collapse').addEventListener('click',e=>{const l=document.getElementById('lineage'),c=l.classList.toggle('collapsed');e.target.textContent=c?'Show':'Hide';e.target.setAttribute('aria-expanded',String(!c));});
+const pb=document.getElementById('pause');pb.addEventListener('click',()=>{paused=!paused;pb.textContent=paused?'Play':'Pause';if(paused)autoStop();});
+const toast=document.getElementById('toast');
+document.getElementById('copy').addEventListener('click',()=>{
+  const txt=JSON.stringify({model:'Flatland resonance model',version:cur.id,name:cur.name,params:params[cur.id],constants:cur.kind==='drain'?{wave_speed:CS,drain_scale:0.025,spin_scale:0.025}:cur.kind==='evap'?{hole_qubits:NB,entropy:'Renyi-2, bits',prescramble_layers:6,gates:'random U(2) per qubit + CZ on random pairs per layer'}:{},
+    yk:cur.kind==='yk'?ykCompute().map((r,i)=>({radiated:i+1,P_success:+r.P.toFixed(5),F_teleport:+r.F.toFixed(5)})):undefined,
+    run:cur.kind==='evap'?{message_thrown_at:getEng().throwAt,history:getEng().hist.map(r=>({radiated:r.n,in_hole:r.bh,S2:+r.S.toFixed(4),I2_message:+r.I.toFixed(4)}))}:undefined},null,2);
+  const done=m=>{toast.textContent=m;setTimeout(()=>toast.textContent='',2500);};
+  try{navigator.clipboard.writeText(txt).then(()=>done('Parameters copied'),()=>done(txt));}catch(e){done(txt);}
+});
+
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){paused=true;pb.textContent='Play';}
+let frame=0;
+function loop(){
+  const st=states[cur.id];
+  if(!paused){st.t+=0.016;st.yaw+=cur.orient==='h'?0.0025:0.002;st.pulses=st.pulses.filter(q=>st.t-q.t0<9);}
+  lastInfo=render(mctx,cur,params[cur.id],st,{W,H,N:26,lw:1,dt:paused?0:0.016,thumb:false});
+  if(cur.kind==='drain'){const s=document.getElementById('s-rh');if(s){s.textContent=lastInfo.rh.toFixed(2);document.getElementById('s-re').textContent=lastInfo.re.toFixed(2);document.getElementById('s-t').textContent=params.v4.thermal?lastInfo.T.toFixed(1):'off';}}
+  if(frame%6===0)thumbs.forEach(th=>{if(!paused){th.st.t+=0.096;th.st.yaw+=0.012;}render(th.cx,th.v,params[th.v.id],th.st,{W:64,H:41,N:12,lw:0.45,dt:paused?0:0.096,thumb:true});});
+  frame++;requestAnimationFrame(loop);
+}
+sizeMain();
+select(/^#v[1-9]$/.test(location.hash)?location.hash.slice(1):'v9',false);
+loop();
+</script>
+<script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+</body>
+</html>

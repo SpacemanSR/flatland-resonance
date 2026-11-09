@@ -91,6 +91,32 @@ input[type=range]{flex:1;accent-color:var(--violet)}
 .pp-key i.band{height:7px;background:var(--violet);opacity:.3}
 #pagec{display:block;width:100%;height:auto}
 .btn.on{border-color:var(--violet);color:var(--violet)}
+header{align-items:center}
+.views{display:flex;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px;margin-left:auto}
+.views button{font:inherit;font-size:13px;color:var(--muted);background:none;border:0;border-radius:999px;padding:5px 14px;cursor:pointer}
+.views button[aria-current="page"]{background:var(--panel-2);color:var(--ink)}
+.views button:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+#sources-view{display:flex;flex-direction:column;gap:22px}
+.src-intro h2{font-family:var(--f-display);font-weight:400;font-size:26px;margin:0 0 6px}
+.src-intro p{color:var(--muted);max-width:68ch;margin:0}
+.src-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.src-step{display:grid;grid-template-columns:96px minmax(0,1fr);gap:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:16px 18px}
+.src-tag{font-family:var(--f-mono);font-size:13px;color:var(--violet)}
+.src-tag button{font:inherit;color:var(--muted);background:none;border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-top:8px;cursor:pointer;font-size:11px}
+.src-tag button:hover{border-color:var(--violet);color:var(--ink)}
+.src-step h3{font-family:var(--f-display);font-weight:400;font-size:20px;margin:0 0 6px}
+.src-did{margin:0 0 12px;max-width:72ch}
+.src-k{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:500;margin:10px 0 6px}
+.src-k.lit{color:var(--teal)}.src-k.own{color:var(--amber)}
+.src-refs,.src-own{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.src-refs li{max-width:80ch}
+.src-refs .ti-t{font-style:italic}
+.src-refs a{color:var(--violet);text-decoration:none;font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+.src-refs a:hover{text-decoration:underline}
+.src-all{border-top:1px solid var(--line);padding-top:14px}
+.src-all summary{cursor:pointer;color:var(--muted);font-size:14px}
+.src-all ol{padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;margin:12px 0 0}
+@media (max-width:620px){.src-step{grid-template-columns:minmax(0,1fr);gap:6px}}
 .hint{font-size:12px;color:var(--dim)}
 @media (max-width:760px){
   .lineage{position:static;width:auto;border-radius:0;border:0;border-top:1px solid var(--line);background:var(--panel)}
@@ -107,8 +133,10 @@ input[type=range]{flex:1;accent-color:var(--violet)}
   <header>
     <h1>Flatland <em>resonance</em> model</h1>
     <div class="sub">spacetime as a superfluid · source plane as boundary</div>
+    <nav class="views" aria-label="Pages"><button type="button" id="nav-model" aria-current="page">Model</button><button type="button" id="nav-src">Sources</button></nav>
   </header>
 
+  <div id="model-view">
   <div class="stage">
     <canvas id="main" aria-label="Animated model of the current version"></canvas>
     <div class="badge" id="badge"><b>v9</b> · Teleporting the message out</div>
@@ -135,6 +163,16 @@ input[type=range]{flex:1;accent-color:var(--violet)}
     <div><h2 id="n-title">Sonic horizon and thermal boundary</h2><h3>What changed</h3><p id="n-changed"></p></div>
     <div class="est"><h3>Established physics</h3><ul id="n-est"></ul></div>
     <div class="int"><h3>Interpretive choices</h3><ul id="n-int"></ul></div>
+  </section>
+  </div>
+
+  <section id="sources-view" hidden aria-labelledby="src-h">
+    <div class="src-intro">
+      <h2 id="src-h">Sources for every step</h2>
+      <p>Each step of the build lists the papers and books it rests on, then, separately, the choices that came from us and not from the literature. Links go to the arXiv preprint where one exists; the published journal reference is given alongside.</p>
+    </div>
+    <ol class="src-steps" id="src-steps"></ol>
+    <details class="src-all"><summary id="src-all-sum">All references</summary><ol id="src-all"></ol></details>
   </section>
 </div>
 
@@ -631,8 +669,79 @@ function drawYK(){
   const bo=rows[p.k-1].bo;arrow(bi,tok('--amber'),2,'sent');arrow(bo,tok('--teal'),2,'out');
   pctx.fillStyle=tok('--muted');pctx.textAlign='center';pctx.fillText('Bloch sphere · k = '+p.k,cx,PH-6);
 }
+const REFS={
+abbott:['E. A. Abbott','Flatland: A Romance of Many Dimensions','Seeley & Co., London, 1884',''],
+plato:['Plato','Republic, Book VII (the allegory of the cave)','c. 375 BCE',''],
+banchoff:['T. F. Banchoff','Beyond the Third Dimension: Geometry, Computer Graphics, and Higher Dimensions','Scientific American Library, 1990',''],
+volovik:['G. E. Volovik','The Universe in a Helium Droplet','Oxford University Press, 2003',''],
+blv:['C. Barceló, S. Liberati, M. Visser','Analogue gravity','Living Reviews in Relativity 8, 12 (2005); updated 14, 3 (2011)','gr-qc/0505065'],
+donnelly:['R. J. Donnelly','Quantized Vortices in Helium II','Cambridge University Press, 1991',''],
+abrikosov:['A. A. Abrikosov','On the magnetic properties of superconductors of the second group','Soviet Physics JETP 5, 1174 (1957)',''],
+thooft:['G. ’t Hooft','Dimensional reduction in quantum gravity','1993','gr-qc/9310026'],
+susskind:['L. Susskind','The world as a hologram','Journal of Mathematical Physics 36, 6377 (1995)','hep-th/9409089'],
+maldacena:['J. Maldacena','The large N limit of superconformal field theories and supergravity','Advances in Theoretical and Mathematical Physics 2, 231 (1998)','hep-th/9711200'],
+unruh:['W. G. Unruh','Experimental black-hole evaporation?','Physical Review Letters 46, 1351 (1981)',''],
+visser:['M. Visser','Acoustic black holes: horizons, ergospheres and Hawking radiation','Classical and Quantum Gravity 15, 1767 (1998)','gr-qc/9712010'],
+steinhauer16:['J. Steinhauer','Observation of quantum Hawking radiation and its entanglement in an analogue black hole','Nature Physics 12, 959 (2016)','1510.00621'],
+denova19:['J. R. Muñoz de Nova, K. Golubkov, V. I. Kolobov, J. Steinhauer','Observation of thermal Hawking radiation and its temperature in an analogue black hole','Nature 569, 688 (2019)','1809.00913'],
+torres17:['T. Torres, S. Patrick, A. Coutant, M. Richartz, E. W. Tedford, S. Weinfurtner','Rotational superradiant scattering in a vortex flow','Nature Physics 13, 833 (2017)','1612.06180'],
+hawking75:['S. W. Hawking','Particle creation by black holes','Communications in Mathematical Physics 43, 199 (1975)',''],
+hawkingpage:['S. W. Hawking, D. N. Page','Thermodynamics of black holes in anti-de Sitter space','Communications in Mathematical Physics 87, 577 (1983)',''],
+witten98:['E. Witten','Anti-de Sitter space, thermal phase transition, and confinement in gauge theories','Advances in Theoretical and Mathematical Physics 2, 505 (1998)','hep-th/9803131'],
+page93a:['D. N. Page','Average entropy of a subsystem','Physical Review Letters 71, 1291 (1993)','gr-qc/9305007'],
+page93b:['D. N. Page','Information in black hole radiation','Physical Review Letters 71, 3743 (1993)','hep-th/9306083'],
+hp07:['P. Hayden, J. Preskill','Black holes as mirrors: quantum information in random subsystems','Journal of High Energy Physics 09, 120 (2007)','0708.4025'],
+sekino:['Y. Sekino, L. Susskind','Fast scramblers','Journal of High Energy Physics 10, 065 (2008)','0808.2096'],
+islam15:['R. Islam, R. Ma, P. M. Preiss, M. E. Tai, A. Lukin, M. Rispoli, M. Greiner','Measuring entanglement entropy in a quantum many-body system','Nature 528, 77 (2015)','1509.01160'],
+rt06:['S. Ryu, T. Takayanagi','Holographic derivation of entanglement entropy from AdS/CFT','Physical Review Letters 96, 181602 (2006)','hep-th/0603001'],
+ew15:['N. Engelhardt, A. C. Wall','Quantum extremal surfaces: holographic entanglement entropy beyond the classical regime','Journal of High Energy Physics 01, 073 (2015)','1408.3203'],
+penington19:['G. Penington','Entanglement wedge reconstruction and the information paradox','Journal of High Energy Physics 09, 002 (2020)','1905.08255'],
+aemm19:['A. Almheiri, N. Engelhardt, D. Marolf, H. Maxfield','The entropy of bulk quantum fields and the entanglement wedge of an evaporating black hole','Journal of High Energy Physics 12, 063 (2019)','1905.08762'],
+ammz19:['A. Almheiri, R. Mahajan, J. Maldacena, Y. Zhao','The Page curve of Hawking radiation from semiclassical geometry','Journal of High Energy Physics 03, 149 (2020)','1908.10996'],
+pssy19:['G. Penington, S. H. Shenker, D. Stanford, Z. Yang','Replica wormholes and the black hole interior','2019','1911.11977'],
+ahmst19:['A. Almheiri, T. Hartman, J. Maldacena, E. Shaghoulian, A. Tajdini','Replica wormholes and the entropy of Hawking radiation','2019','1911.12333'],
+nrvh17:['A. Nahum, J. Ruhman, S. Vijay, J. Haah','Quantum entanglement growth under random unitary dynamics','Physical Review X 7, 031016 (2017)','1608.06950'],
+jhn18:['C. Jonay, D. A. Huse, A. Nahum','Coarse-grained dynamics of operator and state entanglement','2018','1803.00089'],
+hnqtwy16:['P. Hayden, S. Nezami, X.-L. Qi, N. Thomas, M. Walter, Z. Yang','Holographic duality from random tensor networks','Journal of High Energy Physics 11, 009 (2016)','1601.01694'],
+dinic70:['E. A. Dinic','Algorithm for solution of a problem of maximum flow in networks with power estimation','Soviet Mathematics Doklady 11, 1277 (1970)',''],
+uhlmann76:['A. Uhlmann','The “transition probability” in the state space of a *-algebra','Reports on Mathematical Physics 9, 273 (1976)',''],
+horodecki99:['M. Horodecki, P. Horodecki, R. Horodecki','General teleportation channel, singlet fraction, and quasidistillation','Physical Review A 60, 1888 (1999)','quant-ph/9807091'],
+nr07:['W. H. Press, S. A. Teukolsky, W. T. Vetterling, B. P. Flannery','Numerical Recipes: The Art of Scientific Computing, 3rd ed. (Householder tridiagonalization and implicit QL)','Cambridge University Press, 2007',''],
+yk17:['B. Yoshida, A. Kitaev','Efficient decoding for the Hayden-Preskill protocol','2017','1710.03363'],
+landsman19:['K. A. Landsman, C. Figgatt, T. Schuster, N. M. Linke, B. Yoshida, N. Y. Yao, C. Monroe','Verified quantum information scrambling','Nature 567, 61 (2019)','1806.02807']
+};
+const STEPS=[
+{tag:'Prelude',title:'Shadows and slices',did:'Before the model existed: a rotating four-dimensional cube cast down to two dimensions, and a sphere passing through a flat plane as seen by a flat observer. The claim was that higher dimensions are best shown by what they leave behind in a lower world, through projections and cross-sections.',refs:['abbott','banchoff','plato'],ours:['Color standing in for the hidden fourth coordinate.','The argument that projection and slicing are the right visual language for abstractness, including metaphysical “planes,” is my thesis, not a published result.']},
+{tag:'v1',title:'Superfluid field',did:'Spacetime drawn as a resonating superfluid membrane with quantized vortices, rising out of an endless flat source plane, with a magnetic dipole twisting the medium.',refs:['volovik','blv','donnelly'],ours:['Standing-wave modes on a square membrane are illustrative.','The global magnetic twist is not physical: a neutral superfluid such as helium-4 does not respond to magnetic fields.','The source plane as “metaphysical infinity” is your framing.']},
+{tag:'v2',title:'East–west turn',did:'The same model re-oriented, with the source plane standing vertically and the field growing sideways out of it.',refs:['volovik','blv'],ours:['Orientation is presentation only.']},
+{tag:'v3',title:'Flux tubes and holographic boundary',did:'Magnetism enters only as quantized flux tubes through vortex cores, as in a type-II superconductor. Clicking the source plane changes the entire field at once, illustrating a boundary that encodes the volume.',refs:['abrikosov','thooft','susskind','maldacena'],ours:['Vortices are placed on a ring as an approximation to the triangular Abrikosov lattice.','The click-position to standing-wave mapping is invented to show non-locality. It is not an AdS/CFT dictionary.']},
+{tag:'v4',title:'Sonic horizon and thermal boundary',did:'A draining, spinning vortex flow. Where flow outruns wave speed, a horizon and an ergoregion form at the radii the analog-gravity literature gives. Test ripples stall at the horizon, and the boundary grows noisy as the horizon grows.',refs:['unruh','visser','blv','steinhauer16','denova19','torres17','witten98','hawkingpage'],ours:['Particle pairs at the horizon are a heuristic picture.','Boundary temperature follows the large-AdS rule (rising with horizon size), which conflicts with the analog rule (falling with size). The model leaves that conflict visible on purpose.']},
+{tag:'v5',title:'Evaporation and the Page curve',did:'The hole becomes a 13-qubit register scrambled by random gates and radiating one qubit per step into the source plane, which acts as a bath. Radiation entropy (Rényi-2) and message recovery are computed from the exact quantum state.',refs:['hawking75','page93b','page93a','hp07','sekino','penington19','aemm19','islam15'],ours:['Horizon size tied to the number of qubits left.','Small-hole temperature rule, chosen because the bath lets the hole evaporate.','Gate set: random single-qubit rotations plus CZ gates on randomly paired qubits. This approximates a fast scrambler; it is not Haar-random.','Rényi-2 entropy instead of von Neumann entropy.']},
+{tag:'v6',title:'Islands',did:'The island formula drawn against the computed curve: the no-island answer (Hawking’s count) and the island answer (the area of the island’s boundary), with the smaller one winning. The island switches on just inside the horizon at the Page time.',refs:['ew15','rt06','penington19','aemm19','ammz19','pssy19','ahmst19','page93a'],ours:['The area term is set equal to the qubits left, and the bulk term with the island is set to zero.','The island’s drawn radius is visual only.','The formula is an input here, checked against the independent qubit calculation. It is not derived from replica wormholes.']},
+{tag:'v7',title:'Circuit islands',did:'Every gate the engine applies is recorded and treated as a network. The minimal cut separating the radiation from the hole is found with a max-flow algorithm. Gates on the radiation’s side form the island, which appears at the Page time and sits a few gate layers in the past, matching the expectation that information escapes only after a scrambling delay.',refs:['nrvh17','jhn18','hnqtwy16','rt06','penington19','dinic70'],ours:['Each CZ gate and each worldline segment counts as one bit, which gives an upper bound on entropy for these gates.','The disk layout of circuit history is visual.','Reading radiation-side gates as an island is an analogy built on the same minimal-cut logic behind Ryu–Takayanagi in tensor networks.']},
+{tag:'v8',title:'Decoding the message',did:'Uhlmann’s theorem gives the best decoder acting only on the radiation. The model computes its entanglement fidelity with the reference qubit, from exactly 0.25 (guessing) up to 1, and the corresponding average fidelity over all message states.',refs:['uhlmann76','hp07','horodecki99','nr07','yk17','landsman19'],ours:['The decoder is required to leave the hole’s state unchanged, so the true optimum can be slightly higher.','The decoder is shown to exist and is scored, but not written out as a circuit.','Fidelity is computed only once seven or fewer qubits remain in the hole, a compute limit.']},
+{tag:'v9',title:'Teleporting the message out',did:'The explicit Yoshida–Kitaev decoder on a six-qubit old hole. The decoder runs the complex-conjugated dynamics on its copy of the early radiation, checks for Bell pairs between radiated qubits and their mirror partners, and on success receives the message. Success probability falls toward 1/4 while fidelity rises to 1, matching the paper’s formula F = 1/(4P).',refs:['yk17','hp07','landsman19','horodecki99'],ours:['A separate, smaller hole than v5–v8, because the full-size version needs about 30 simulated qubits.','The probabilistic version of the protocol. The deterministic, Grover-style version is not implemented.','Radiated qubits are taken from the far end of the register so the message must be scrambled to escape.']},
+{tag:'Methods',title:'How the numbers are computed',did:'Exact state-vector simulation (15 qubits for v5–v8, 14 for v9) with a seeded random-number generator, so every run can be reproduced from its seed. Eigenvalues come from Householder tridiagonalization with an implicit QL solver. Minimal cuts come from Dinic’s max-flow algorithm.',refs:['nr07','dinic70'],ours:['Everything runs on the device. “Copy parameters” exports the seed and full run history so a result can be checked independently.']}
+];
+
+const refHTML=k=>{const[a,t,j,x]=REFS[k];return `${a}, <span class="ti-t">${t}</span>, ${j}.`+(x?` <a href="https://arxiv.org/abs/${x}" target="_blank" rel="noopener">arXiv:${x}</a>`:'');};
+function buildSources(){const ol=document.getElementById('src-steps');if(ol.childElementCount)return;
+  ol.innerHTML=STEPS.map(st=>{const vid=/^v\d$/.test(st.tag)?st.tag:null;
+    return `<li class="src-step"><div class="src-tag">${st.tag}${vid?`<br><button type="button" data-open="${vid}">Open ${vid}</button>`:''}</div><div><h3>${st.title}</h3><p class="src-did">${st.did}</p>
+      <div class="src-k lit">From the literature</div><ul class="src-refs">${st.refs.map(k=>`<li>${refHTML(k)}</li>`).join('')}</ul>
+      <div class="src-k own">Our choices, not from the literature</div><ul class="src-own">${st.ours.map(o=>`<li>${o}</li>`).join('')}</ul></div></li>`;}).join('');
+  const keys=Object.keys(REFS).sort((a,b)=>REFS[a][0].localeCompare(REFS[b][0]));
+  document.getElementById('src-all').innerHTML=keys.map(k=>`<li>${refHTML(k)}</li>`).join('');
+  document.getElementById('src-all-sum').textContent='All references ('+keys.length+')';
+  ol.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{location.hash=b.dataset.open;}));}
+function showView(src){document.getElementById('model-view').hidden=src;document.getElementById('sources-view').hidden=!src;
+  document.getElementById('nav-model').setAttribute('aria-current',src?'false':'page');document.getElementById('nav-src').setAttribute('aria-current',src?'page':'false');
+  if(src){buildSources();autoStop();window.scrollTo(0,0);}else{sizeMain();if(cur.kind==='evap'||cur.kind==='yk')sizePage();}}
+function route(){const h=location.hash.slice(1);if(h==='sources'){showView(true);return;}showView(false);if(/^v[1-9]$/.test(h))select(h,false);}
+document.getElementById('nav-src').addEventListener('click',()=>{location.hash='sources';});
+document.getElementById('nav-model').addEventListener('click',()=>{location.hash=cur.id;});
 function select(id,push){const v=VERS.find(x=>x.id===id);if(!v)return;if(v!==cur)autoStop();cur=v;buildUI();if(push&&location.hash!=='#'+id)location.hash=id;}
-window.addEventListener('hashchange',()=>select(location.hash.slice(1),false));
+window.addEventListener('hashchange',route);
 
 main.addEventListener('click',e=>{if(cur.kind!=='flux'||!lastInfo)return;const r=main.getBoundingClientRect(),mx=(e.clientX-r.left)*W/r.width,my=(e.clientY-r.top)*H/r.height;
   let best=[0,0],bd=1e9;for(let u=-1.6;u<=1.6;u+=0.08)for(let v=-1.6;v<=1.6;v+=0.08){const q=lastInfo.P(u,v,Z0),d=(q[0]-mx)**2+(q[1]-my)**2;if(d<bd){bd=d;best=[u,v];}}
@@ -651,7 +760,9 @@ document.getElementById('copy').addEventListener('click',()=>{
 
 if(matchMedia('(prefers-reduced-motion: reduce)').matches){paused=true;pb.textContent='Play';}
 let frame=0;
+const mview=document.getElementById('model-view');
 function loop(){
+  if(mview.hidden){requestAnimationFrame(loop);return;}
   const st=states[cur.id];
   if(!paused){st.t+=0.016;st.yaw+=cur.orient==='h'?0.0025:0.002;st.pulses=st.pulses.filter(q=>st.t-q.t0<9);}
   lastInfo=render(mctx,cur,params[cur.id],st,{W,H,N:26,lw:1,dt:paused?0:0.016,thumb:false});
@@ -661,6 +772,7 @@ function loop(){
 }
 sizeMain();
 select(/^#v[1-9]$/.test(location.hash)?location.hash.slice(1):'v9',false);
+if(location.hash==='#sources')showView(true);
 loop();
 </script>
 <script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>

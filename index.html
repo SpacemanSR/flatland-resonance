@@ -117,6 +117,45 @@ header{align-items:center}
 .src-all summary{cursor:pointer;color:var(--muted);font-size:14px}
 .src-all ol{padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;margin:12px 0 0}
 @media (max-width:620px){.src-step{grid-template-columns:minmax(0,1fr);gap:6px}}
+#findings-view{display:flex;flex-direction:column;gap:30px}
+.fd-eyebrow{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px}
+.fd-thesis{font-family:var(--f-display);font-weight:400;font-size:clamp(24px,3.6vw,34px);line-height:1.15;margin:0;max-width:880px;text-wrap:balance}
+.chip{display:inline-block;font-family:var(--f-mono);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--bg);padding:2px 8px;border-radius:5px;white-space:nowrap;flex:none;align-self:flex-start;vertical-align:middle}
+.chip.est{background:var(--teal)}.chip.own{background:var(--amber)}.chip.cmp{background:var(--violet)}
+.fd-key{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px;color:var(--muted)}
+.fd-key li{display:flex;align-items:center;gap:8px}
+.fd-h{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.2;margin:0 0 12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.fd-h .chip{align-self:center}
+.fd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.fd-card{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.fd-card h4,.fd-finding h4{font-family:var(--f-display);font-weight:400;font-size:20px;line-height:1.2;margin:0}
+.fd-card p,.fd-finding p{margin:0;font-size:14px;max-width:62ch}
+.fd-card.t-cmp{border-top:3px solid var(--violet)}.fd-card.t-own{border-top:3px solid var(--amber)}.fd-card.t-no{border-top:3px solid var(--red)}
+.fd-vers{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+.fd-vers button,.fd-open{font:inherit;font-family:var(--f-mono);font-size:12px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;cursor:pointer}
+.fd-vers button:hover,.fd-open:hover{border-color:var(--violet);color:var(--ink)}
+.fd-vers button:focus-visible,.fd-open:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.fd-list{display:flex;flex-direction:column;gap:14px}
+.fd-finding{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:18px 20px}
+.fd-side{display:flex;flex-direction:column;gap:8px;min-width:0}
+.fd-num{font-family:var(--f-display);font-size:clamp(44px,8vw,68px);line-height:1;color:var(--violet);font-variant-numeric:tabular-nums}
+.fd-line{display:flex;gap:8px;align-items:baseline;font-size:13.5px}
+.fd-line .chip{position:relative;top:-1px}
+.fd-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:4px}
+.fd-run{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.fd-chart{display:block;width:100%;height:auto}
+.fd-scroll{overflow-x:auto;min-width:0}
+.fd-tbl{width:100%;border-collapse:collapse;font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
+.fd-tbl th,.fd-tbl td{text-align:right;padding:6px 10px;border-bottom:1px solid var(--line);color:var(--muted)}
+.fd-tbl th{font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.fd-tbl tr.hi td{background:var(--panel-2);color:var(--ink)}
+.fd-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fd-pair>div{border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.fd-seq{font-family:var(--f-mono);font-size:12px!important;color:var(--muted)}
+.fd-note{font-size:12.5px;color:var(--muted);max-width:86ch;margin:12px 0 0}
+.fd-verdict{font-family:var(--f-display);font-size:22px;line-height:1.3;margin:16px 0 0;max-width:44ch}
+@media (max-width:760px){.fd-finding{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:420px){.fd-pair{grid-template-columns:minmax(0,1fr)}}
 .hint{font-size:12px;color:var(--dim)}
 @media (max-width:760px){
   .lineage{position:static;width:auto;border-radius:0;border:0;border-top:1px solid var(--line);background:var(--panel)}
@@ -133,7 +172,7 @@ header{align-items:center}
   <header>
     <h1>Flatland <em>resonance</em> model</h1>
     <div class="sub">spacetime as a superfluid · source plane as boundary</div>
-    <nav class="views" aria-label="Pages"><button type="button" id="nav-model" aria-current="page">Model</button><button type="button" id="nav-src">Sources</button></nav>
+    <nav class="views" aria-label="Pages"><button type="button" id="nav-model" aria-current="page">Model</button><button type="button" id="nav-find">Findings</button><button type="button" id="nav-src">Sources</button></nav>
   </header>
 
   <div id="model-view">
@@ -173,6 +212,161 @@ header{align-items:center}
     </div>
     <ol class="src-steps" id="src-steps"></ol>
     <details class="src-all"><summary id="src-all-sum">All references</summary><ol id="src-all"></ol></details>
+  </section>
+
+  <section id="findings-view" hidden aria-labelledby="fd-h">
+    <div>
+      <div class="fd-eyebrow">The thesis</div>
+      <h2 class="fd-thesis" id="fd-h">A flat boundary can carry everything a black hole takes in, and a model can show it one computed step at a time.</h2>
+      <ul class="fd-key" aria-label="How claims are labelled">
+        <li><span class="chip est">Established physics</span>published results, cited by author and year</li>
+        <li><span class="chip own">Our choice</span>mappings, visuals and readings that came from us</li>
+        <li><span class="chip cmp">Computed</span>numbers from this model’s engine, reproducible from a seed</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="fd-h">Three strands, three standings</h3>
+      <div class="fd-grid">
+        <div class="fd-card"><span class="chip own">Our choice</span><h4>The picture</h4><p>Higher dimensions are best shown by what they leave behind in a lower world: shadows, slices, a field rising from a plane.</p></div>
+        <div class="fd-card"><span class="chip est">Established physics</span><h4>The physics</h4><p>A lower-dimensional boundary encodes the volume (’t Hooft 1993; Susskind 1995; Maldacena 1998), and an evaporating hole hands its information back (Page 1993).</p></div>
+        <div class="fd-card"><span class="chip own">Our choice</span><h4>The framing</h4><p>The source plane as a flatland of metaphysical infinity. Physics permits that reading and does not prove it.</p></div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="fd-h">The research: nine versions, three acts</h3>
+      <div class="fd-grid">
+        <div class="fd-card"><div class="fd-eyebrow">Act I</div><h4>The medium</h4><p>Spacetime drawn as a resonating superfluid over a flat source plane, with magnetism entering only as quantized flux tubes.</p>
+          <div class="fd-vers"><button type="button" data-open="v1">v1 · Superfluid field</button><button type="button" data-open="v2">v2 · East–west turn</button><button type="button" data-open="v3">v3 · Flux tubes</button></div></div>
+        <div class="fd-card"><div class="fd-eyebrow">Act II</div><h4>The horizon</h4><p>The fluid drains into a spinning vortex, and a horizon forms where the flow outruns the wave speed (Unruh 1981; Visser 1998).</p>
+          <div class="fd-vers"><button type="button" data-open="v4">v4 · Sonic horizon</button></div></div>
+        <div class="fd-card"><div class="fd-eyebrow">Act III</div><h4>The information</h4><p>The hole becomes a 13-qubit register that evaporates into the source plane and gives its message back.</p>
+          <div class="fd-vers"><button type="button" data-open="v5">v5 · Page curve</button><button type="button" data-open="v6">v6 · Islands</button><button type="button" data-open="v7">v7 · Circuit islands</button><button type="button" data-open="v8">v8 · Decoding</button><button type="button" data-open="v9">v9 · Teleporting out</button></div></div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="fd-h">Findings so far</h3>
+      <div class="fd-list">
+
+        <article class="fd-finding">
+          <div class="fd-side">
+            <span class="chip cmp">Computed · finding 1</span>
+            <h4>The entropy turns around halfway</h4>
+            <div class="fd-num">5.43</div>
+            <p>bits at the peak, with 7 of 13 qubits out, then back to zero once the hole is gone. Hawking’s count says 7 at that point and keeps rising.</p>
+            <div class="fd-line"><span class="chip est">Established</span><span>Page (1993) predicted this shape for any evaporation that preserves information.</span></div>
+            <div class="fd-line"><span class="chip own">Our choice</span><span>The model shows what the curve looks like, not how gravity produces it.</span></div>
+            <div class="fd-foot"><button type="button" class="fd-open" data-open="v5">Run it in v5</button><span class="fd-run">seed 1 · depth 3</span></div>
+          </div>
+          <svg class="fd-chart" viewBox="0 0 1000 540" role="img" aria-label="Radiation entropy in bits against qubits radiated. The computed curve rises about one bit per qubit, peaks at 5.43 bits at 7 of 13, and falls to zero. Hawking’s prediction is a dashed line that keeps rising.">
+            <g stroke="#2b3160" stroke-width="1"><line x1="70" y1="360" x2="980" y2="360"/><line x1="70" y1="250" x2="980" y2="250"/><line x1="70" y1="140" x2="980" y2="140"/><line x1="70" y1="30" x2="980" y2="30"/></g>
+            <line x1="70" y1="470" x2="980" y2="470" stroke="#6d6a92" stroke-width="2"/>
+            <line x1="70" y1="470" x2="630" y2="30" stroke="#9a97bd" stroke-width="3" stroke-dasharray="10 8"/>
+            <polygon points="70,470 140,415 210,360.2 280,305.7 350,252.3 420,204.4 490,172.2 560,171.6 630,204.1 700,252.3 770,305.4 840,360.2 910,415.1 980,470" fill="#afa9ec" fill-opacity="0.14"/>
+            <polyline points="70,470 140,415 210,360.2 280,305.7 350,252.3 420,204.4 490,172.2 560,171.6 630,204.1 700,252.3 770,305.4 840,360.2 910,415.1 980,470" fill="none" stroke="#afa9ec" stroke-width="5" stroke-linejoin="round"/>
+            <circle cx="560" cy="171.6" r="12" fill="#e7e5f6" stroke="#151933" stroke-width="4"/>
+            <g fill="#9a97bd" font-family="IBM Plex Mono, ui-monospace, monospace" font-size="24">
+              <text x="56" y="478" text-anchor="end">0</text><text x="56" y="368" text-anchor="end">2</text><text x="56" y="258" text-anchor="end">4</text><text x="56" y="148" text-anchor="end">6</text><text x="56" y="38" text-anchor="end">8</text>
+              <text x="70" y="506" text-anchor="middle">0</text><text x="560" y="506" text-anchor="middle">7</text><text x="980" y="506" text-anchor="end">13</text>
+              <text x="525" y="534" text-anchor="middle">qubits radiated · entropy in bits</text>
+              <text x="650" y="44">Hawking’s count</text>
+            </g>
+          </svg>
+        </article>
+
+        <article class="fd-finding">
+          <div class="fd-side">
+            <span class="chip cmp">Computed · finding 2</span>
+            <h4>Two routes reach the same island</h4>
+            <div class="fd-num">13/13</div>
+            <p>steps where the cut found in the gate record matches the island formula. Both stay within 0.6 bit of the exact entropy.</p>
+            <div class="fd-line"><span class="chip est">Established</span><span>Entropy is the smaller of Hawking’s count and an island’s boundary area (Penington 2019; Almheiri et al. 2019).</span></div>
+            <div class="fd-line"><span class="chip own">Our choice</span><span>Reading the cut as an island is an analogy. The formula is an input, not derived.</span></div>
+            <div class="fd-foot"><button type="button" class="fd-open" data-open="v7">Run it in v7</button><span class="fd-run">seed 1 · depth 3 · bits</span></div>
+          </div>
+          <div class="fd-scroll"><table class="fd-tbl">
+            <thead><tr><th scope="col">Qubits out</th><th scope="col">Exact entropy</th><th scope="col">Island formula</th><th scope="col">Circuit cut</th></tr></thead>
+            <tbody>
+              <tr><td>5</td><td>4.83</td><td>5</td><td>5</td></tr>
+              <tr><td>6</td><td>5.41</td><td>6</td><td>6</td></tr>
+              <tr class="hi"><td>7</td><td>5.43</td><td>6</td><td>6</td></tr>
+              <tr><td>8</td><td>4.84</td><td>5</td><td>5</td></tr>
+              <tr><td>9</td><td>3.96</td><td>4</td><td>4</td></tr>
+            </tbody>
+          </table></div>
+        </article>
+
+        <article class="fd-finding">
+          <div class="fd-side">
+            <span class="chip cmp">Computed · finding 3</span>
+            <h4>An old hole returns a message fast</h4>
+            <p>Qubits that must radiate before the best decoder reaches 0.99 fidelity. 0.25 is guessing and 1 is perfect recovery.</p>
+            <div class="fd-line"><span class="chip est">Established</span><span>A message thrown into an old hole returns after a short scrambling delay; a young hole keeps it until the turn (Hayden and Preskill 2007).</span></div>
+            <div class="fd-line"><span class="chip own">Our choice</span><span>The two throw points were picked for this summary. In v8 you choose when to throw.</span></div>
+            <div class="fd-foot"><button type="button" class="fd-open" data-open="v8">Run it in v8</button><span class="fd-run">seed 1 · depth 3</span></div>
+          </div>
+          <div class="fd-pair">
+            <div><div class="fd-eyebrow">Young hole</div><div class="fd-num">10</div><p>Message thrown in at the start.</p><p class="fd-seq">0.58 → 0.90 → 0.98 → 0.99<br>at 7, 8, 9, 10 qubits out</p></div>
+            <div><div class="fd-eyebrow">Old hole</div><div class="fd-num">4</div><p>Message thrown in after 9 of 13 were out.</p><p class="fd-seq">0.25 → 0.62 → 0.96 → 0.99<br>over the next 4 qubits</p></div>
+          </div>
+        </article>
+
+        <article class="fd-finding">
+          <div class="fd-side">
+            <span class="chip cmp">Computed · finding 4</span>
+            <h4>A running decoder teleports the message out</h4>
+            <div class="fd-num">0.9985</div>
+            <p>fidelity of the teleported message with five qubits collected, with the check passing a quarter of the time. With one layer of scrambling the same decoder never passes 0.50.</p>
+            <div class="fd-line"><span class="chip est">Established</span><span>Predicted for a fully scrambling hole: success near 1/4, fidelity near 1 (Yoshida and Kitaev 2017).</span></div>
+            <div class="fd-line"><span class="chip own">Our choice</span><span>A separate six-qubit hole, and the probabilistic version of the protocol.</span></div>
+            <div class="fd-foot"><button type="button" class="fd-open" data-open="v9">Run it in v9</button><span class="fd-run">seed 1 · depth 6</span></div>
+          </div>
+          <div class="fd-scroll"><table class="fd-tbl">
+            <thead><tr><th scope="col">Qubits collected</th><th scope="col">Check passes</th><th scope="col">Fidelity</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>0.4692</td><td>0.5329</td></tr>
+              <tr><td>2</td><td>0.3095</td><td>0.8078</td></tr>
+              <tr><td>3</td><td>0.2655</td><td>0.9416</td></tr>
+              <tr><td>4</td><td>0.2505</td><td>0.9980</td></tr>
+              <tr class="hi"><td>5</td><td>0.2504</td><td>0.9985</td></tr>
+            </tbody>
+          </table></div>
+        </article>
+
+      </div>
+      <p class="fd-note">These numbers come from this model’s own engine, run on 9 November 2026 with seed 1. A new circuit uses a new seed, so a live run will differ slightly. Across seeds 1 to 8 the entropy peak stays between 5.40 and 5.43 bits.</p>
+    </div>
+
+    <div>
+      <h3 class="fd-h">What the model does not show</h3>
+      <div class="fd-grid">
+        <div class="fd-card"><h4>That spacetime is a superfluid</h4><p>The fluid picture and the qubit engine are joined by our own mapping. Neither is derived from the other.</p></div>
+        <div class="fd-card"><h4>How gravity makes islands</h4><p>The island formula is an input, and the circuit cut is an analogy to it. Replica wormholes are not derived.</p></div>
+        <div class="fd-card"><h4>A hole of realistic size</h4><p>Thirteen qubits is tiny. Curves are noisy, and the turn lands near six or seven qubits.</p></div>
+        <div class="fd-card"><h4>A new prediction</h4><p>Every number reproduces a published result. Nothing yet separates this picture from standard physics.</p></div>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="fd-h">Where the thesis stands <span class="chip own">Our choice · assessment</span></h3>
+      <div class="fd-grid">
+        <div class="fd-card t-cmp"><div class="fd-eyebrow">Reproduced</div><p>One seeded engine reproduces the Page curve, the island rule, the mirror effect and a working decoder.</p></div>
+        <div class="fd-card t-own"><div class="fd-eyebrow">Argued</div><p>A flat source plane works as the picture of a boundary that holds the information. That is a design argument.</p></div>
+        <div class="fd-card t-no"><div class="fd-eyebrow">Not established</div><p>That spacetime is a superfluid, or that the plane is a metaphysical infinity. The model cannot test either.</p></div>
+      </div>
+      <p class="fd-verdict">A faithful, sourced demonstration of established physics. Not yet a theory of its own.</p>
+    </div>
+
+    <div>
+      <h3 class="fd-h">Next steps <span class="chip own">Our choice · proposals</span></h3>
+      <div class="fd-grid">
+        <div class="fd-card"><h4>Resolve the temperature conflict</h4><p>Add a Hawking–Page stage so the boundary and the analog hole follow one rule.</p></div>
+        <div class="fd-card"><h4>Run the decoder at full size</h4><p>The 13-qubit hole needs about 30 simulated qubits, more than a browser holds. Move that run off the device.</p></div>
+        <div class="fd-card"><h4>Have the numbers re-run</h4><p>Export seeds and run histories with Copy parameters and have someone independent reproduce the four findings.</p></div>
+      </div>
+    </div>
   </section>
 </div>
 
@@ -734,11 +928,14 @@ function buildSources(){const ol=document.getElementById('src-steps');if(ol.chil
   document.getElementById('src-all').innerHTML=keys.map(k=>`<li>${refHTML(k)}</li>`).join('');
   document.getElementById('src-all-sum').textContent='All references ('+keys.length+')';
   ol.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{location.hash=b.dataset.open;}));}
-function showView(src){document.getElementById('model-view').hidden=src;document.getElementById('sources-view').hidden=!src;
-  document.getElementById('nav-model').setAttribute('aria-current',src?'false':'page');document.getElementById('nav-src').setAttribute('aria-current',src?'page':'false');
-  if(src){buildSources();autoStop();window.scrollTo(0,0);}else{sizeMain();if(cur.kind==='evap'||cur.kind==='yk')sizePage();}}
-function route(){const h=location.hash.slice(1);if(h==='sources'){showView(true);return;}showView(false);if(/^v[1-9]$/.test(h))select(h,false);}
+function showView(v){v=v===true?'sources':(v||'model');
+  document.getElementById('model-view').hidden=v!=='model';document.getElementById('findings-view').hidden=v!=='findings';document.getElementById('sources-view').hidden=v!=='sources';
+  [['nav-model','model'],['nav-find','findings'],['nav-src','sources']].forEach(([id,k])=>document.getElementById(id).setAttribute('aria-current',v===k?'page':'false'));
+  if(v==='model'){sizeMain();if(cur.kind==='evap'||cur.kind==='yk')sizePage();}else{if(v==='sources')buildSources();autoStop();window.scrollTo(0,0);}}
+function route(){const h=location.hash.slice(1);if(h==='sources'||h==='findings'){showView(h);return;}showView('model');if(/^v[1-9]$/.test(h))select(h,false);}
 document.getElementById('nav-src').addEventListener('click',()=>{location.hash='sources';});
+document.getElementById('nav-find').addEventListener('click',()=>{location.hash='findings';});
+document.getElementById('findings-view').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)location.hash=b.dataset.open;});
 document.getElementById('nav-model').addEventListener('click',()=>{location.hash=cur.id;});
 function select(id,push){const v=VERS.find(x=>x.id===id);if(!v)return;if(v!==cur)autoStop();cur=v;buildUI();if(push&&location.hash!=='#'+id)location.hash=id;}
 window.addEventListener('hashchange',route);
@@ -772,7 +969,7 @@ function loop(){
 }
 sizeMain();
 select(/^#v[1-9]$/.test(location.hash)?location.hash.slice(1):'v9',false);
-if(location.hash==='#sources')showView(true);
+if(location.hash==='#sources'||location.hash==='#findings')showView(location.hash.slice(1));
 loop();
 </script>
 <script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>

@@ -1,0 +1,28 @@
+{
+ "register": "N25_m1",
+ "condition": "HL_old",
+ "seed": 4001,
+ "seconds": 706.9,
+ "final_D": 6.000000000000071,
+ "expected_final": 6,
+ "manifest": {
+  "utc": "2026-11-27T20:09:50+00:00",
+  "backend": "numpy",
+  "python": "3.13.18",
+  "libraries": {
+   "numpy": "2.5.3",
+   "scipy": "1.18.1",
+   "qiskit": "2.6.2",
+   "qiskit_aer": "0.18.4",
+   "cupy": null
+  },
+  "system": "Linux",
+  "machine": "x86_64",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "cpu_count": 2,
+  "ram_gb": 8.2,
+  "gpu": null,
+  "git_commit": "28945b9deee4120c485c9668abb763a6a03d518a",
+  "v10_sha256": "be4d1c4a247218fc97224f5f0528d7d09d732c11e8889c8efff9224d7647fd80"
+ }
+}

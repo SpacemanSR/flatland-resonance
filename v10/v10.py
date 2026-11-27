@@ -13,6 +13,23 @@ Entropies are Renyi-2, in bits.
 """
 import numpy as np
 
+# Array backend for the state vector: numpy (CPU) by default, or cupy (NVIDIA GPU) via set_backend.
+# Random draws always use numpy on the CPU, so a given seed gives the same circuit on either backend.
+xp = np
+
+
+def set_backend(name):
+    """Select 'numpy' or 'cupy' for state-vector arithmetic."""
+    global xp
+    if name == 'numpy':
+        xp = np
+    elif name == 'cupy':
+        import cupy
+        xp = cupy
+    else:
+        raise ValueError(name)
+    return xp
+
 
 def haar4(rng):
     z = (rng.standard_normal((4, 4)) + 1j * rng.standard_normal((4, 4))) / np.sqrt(2)
@@ -22,8 +39,9 @@ def haar4(rng):
 
 
 class Hole:
-    def __init__(self, n_core, layer_sizes, seed, pre_scramble=6):
+    def __init__(self, n_core, layer_sizes, seed, pre_scramble=6, trace=False):
         self.rng = np.random.default_rng(seed)
+        self.log = [] if trace else None      # (matrix, qubits) for every gate, for cross-validation
         self.nc = n_core
         self.layers = []
         q = n_core
@@ -38,7 +56,7 @@ class Hole:
             self.ref_layers.append(list(range(r, r + m)))
             r += m
         self.N = r
-        psi = np.zeros(2 ** self.N, dtype=np.complex128)
+        psi = xp.zeros(2 ** self.N, dtype=xp.complex128)
         psi[0] = 1.0
         self.psi = psi.reshape((2,) * self.N)
         # Bell pairs matter <-> reference
@@ -53,15 +71,20 @@ class Hole:
 
     # --- gates -------------------------------------------------------
     def _apply1(self, U, a):
-        self.psi = np.moveaxis(np.tensordot(U, self.psi, axes=([1], [a])), 0, a)
+        if self.log is not None:
+            self.log.append((np.array(U, dtype=complex), (a,)))
+        self.psi = xp.moveaxis(xp.tensordot(xp.asarray(U), self.psi, axes=([1], [a])), 0, a)
 
     def _h(self, a):
         self._apply1(np.array([[1, 1], [1, -1]]) / np.sqrt(2), a)
 
     def _apply2(self, U, a, b):
-        U = U.reshape(2, 2, 2, 2)
-        t = np.tensordot(U, self.psi, axes=([2, 3], [a, b]))
-        self.psi = np.moveaxis(t, [0, 1], [a, b])
+        if self.log is not None:
+            self.log.append((np.array(U, dtype=complex).reshape(4, 4), (a, b)))
+        U = xp.asarray(U).reshape(2, 2, 2, 2)
+        t = xp.tensordot(U, self.psi, axes=([2, 3], [a, b]))
+        del self.psi                                   # free the old state before the move (memory)
+        self.psi = xp.moveaxis(t, [0, 1], [a, b])
 
     def _cnot(self, c, t):
         U = np.eye(4, dtype=complex)[[0, 1, 3, 2]]
@@ -93,9 +116,12 @@ class Hole:
         if len(A) > self.N / 2:
             A = [q for q in range(self.N) if q not in A]
         B = [q for q in range(self.N) if q not in A]
-        M = np.transpose(self.psi, A + B).reshape(2 ** len(A), -1)
+        M = xp.ascontiguousarray(xp.transpose(self.psi, A + B)).reshape(2 ** len(A), -1)
         rho = M @ M.conj().T
-        return float(-np.log2(np.real(np.vdot(rho, rho))))
+        del M
+        pur = float(xp.real(xp.vdot(rho, rho)))
+        del rho
+        return float(-np.log2(pur))
 
     def I2(self, A, B):
         return self.S2(A) + self.S2(B) - self.S2(list(A) + list(B))
@@ -106,20 +132,57 @@ def page_step(n_core):
     return n_core // 2 + 1
 
 
-def run_schedule(n_core, layer_sizes, seed, release_steps, gradual_width=0, settle=0, mix_on_join=None):
+def run_strict(n_core, layer_sizes, seed, trace=False):
+    """H_S sanity arm: last in, first out, no scrambling. All matter is in from the start; the emission
+    order is layer K, two core qubits, layer K-1, two core qubits, ..., then the rest of the core.
+    D(k) must show K turns, and the per-layer traces must rise in reverse layer order."""
+    h = Hole(n_core, layer_sizes, seed, pre_scramble=0, trace=trace)
+    for i in range(len(layer_sizes)):
+        h.release(i)
+    core = list(range(n_core))
+    order = []
+    for L in reversed(h.layers):
+        order += L + [core.pop(0) for _ in range(min(2, len(core)))]
+    order += core
+    D, per, checkpoints = [], [], []
+
+    def record():
+        if trace:
+            checkpoints.append((len(h.log), list(h.rad)))
+        D.append(h.I2(h.ref, h.rad))
+        per.append([h.I2(rl, h.rad) for rl in h.ref_layers])
+
+    record()
+    for q in order:
+        h.active.remove(q)
+        h.rad.append(q)
+        record()
+    if trace:
+        return np.array(D), np.array(per), dict(log=h.log, checkpoints=checkpoints, N=h.N, ref=list(h.ref))
+    return np.array(D), np.array(per)
+
+
+def run_schedule(n_core, layer_sizes, seed, release_steps=None, gradual_width=0, settle=0, mix_on_join=None,
+                 trace=False, strict=False):
     """One trial. release_steps[i] = step at which layer i releases (sharp) or starts (gradual).
     settle = scrambling layers applied after step-0 releases, before the first emission
     (pilot amendment 1: the ledger baseline's matter is scrambled in before evaporation starts).
     mix_on_join = scrambling layers applied right after any release step, before the next emission
     (pilot-2 amendment: Hayden-Preskill's instantaneous-scrambler idealization; one t*). If None, it
     equals settle at step 0 and 0 afterwards, which reproduces pilot 1 exactly.
-    Returns D(k) for k = 0..n_steps and per-layer traces."""
-    h = Hole(n_core, layer_sizes, seed)
+    Returns D(k) for k = 0..n_steps and per-layer traces. With trace=True, also returns a dict with the
+    full gate log and, for each recorded step, the gate count so far and the radiation qubits."""
+    if strict:
+        return run_strict(n_core, layer_sizes, seed, trace=trace)
+    h = Hole(n_core, layer_sizes, seed, trace=trace)
+    checkpoints = []
     n_hole_total = n_core + sum(layer_sizes)
     D, per = [], []
     k = 0
 
     def record():
+        if trace:
+            checkpoints.append((len(h.log), list(h.rad)))
         D.append(h.I2(h.ref, h.rad))
         per.append([h.I2(rl, h.rad) for rl in h.ref_layers])
 
@@ -154,6 +217,9 @@ def run_schedule(n_core, layer_sizes, seed, release_steps, gradual_width=0, sett
         record()
         if len(h.rad) == n_hole_total or k > 10 * n_hole_total:
             break
+    if trace:
+        return np.array(D), np.array(per), dict(log=h.log, checkpoints=checkpoints, N=h.N, psi=(h.psi.get() if hasattr(h.psi, 'get') else h.psi.copy()),
+                                               ref=list(h.ref), ref_layers=[list(r) for r in h.ref_layers])
     return np.array(D), np.array(per)
 
 

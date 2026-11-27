@@ -33,6 +33,22 @@ All randomness comes from numpy's `default_rng` with the listed seeds, so runs a
 - Turn rule v1 (a flat stretch, then a 3σ jump) found no turns in 60 of 60 baseline runs, because the rise in this toy is smooth. Before filing it was replaced by rule v2, a peak-prominence rule. At a prominence of 0.2 × 2m bits, rule v2 finds exactly one turn in 60 of 60 baseline runs.
 - No filtered (H_F) run has been made. Confirmatory runs begin only after the protocol is filed.
 
+## Validation and the confirmatory pipeline (v10.2)
+
+| File | What it does |
+| --- | --- |
+| `crossval.py` | Replays v10's exact gate sequences in Qiskit Aer and recomputes D(k) with Qiskit's partial trace. Covers 18 baseline runs at N = 15 and 20 (validation seeds 3001-3003). Worst disagreement: 1.4e-14 bits in D(k); lowest final-state fidelity: 0.99999999999998. Writes `crossval_results.json` |
+| `crossval_negative.py` | Negative control: a deliberate qubit-ordering bug gives a 6-bit discrepancy and fidelity 1e-6, so the check can fail |
+| `conditions.py` | The preregistered confirmatory design: 6 registers, 2,000 runs |
+| `run_confirmatory.py` | Runner. `--timing` makes one baseline run; confirmatory runs are refused without `--osf` (the OSF registration DOI). Every output file carries a run manifest |
+| `analyze.py` | Preregistered analysis: turn rule at f = 0.3 (sensitivity checks at 0.25 and 0.4), Delta_c(m), and the outcome under the section-7 rules |
+| `test_analyze.py` | Checks that each decision rule fires correctly on synthetic curves |
+| `manifest.py` | Records hardware, library versions, git commit and the engine's SHA-256 |
+| `requirements.lock`, `Dockerfile`, `Dockerfile.gpu` | Pinned environment, CPU and GPU images |
+| `COMPUTE.md` | Compute plan, a draft ACCESS request, and the independent-rerun plan |
+
+`v10.set_backend('cupy')` runs the same engine on an NVIDIA GPU. Random draws stay on the CPU, so a seed gives the same circuit on either backend. The GPU path is untested here (there is no GPU in the development workspace); run `crossval.py` on the GPU machine first.
+
 ## Redesign after the literature check (v10.1, 27 Nov 2026)
 
 - **Young holes.** Hayden & Preskill (arXiv:0708.4025) show that information thrown into a young hole stays hidden until the halfway point. Layered release into a young hole therefore gives one turn whatever the gaps. The test arm now releases layers into an *old* hole (`page_step`), and a young-hole release schedule is kept as a control.
@@ -42,4 +58,4 @@ All randomness comes from numpy's `default_rng` with the listed seeds, so runs a
 
 ## Compute
 
-Measured: 0.08 s per run at N = 15 and 6.5 s per run at N = 20. Cost grows about 32× per 5 qubits, so the extrapolated figures are about 3.5 min per run at N = 25 and about 1.8 h per run at N = 30 on one CPU thread. At N = 30 the run also needs about 52 GB of memory at peak.
+Measured on a 2-core Xeon: 5.5 s per run at N = 20 and 707 s per run at N = 25, which is about 128x per 5 qubits. N = 30 would take about 25 h per run on such hardware and needs about 50 GB at peak, so the N = 25 and N = 30 arms run on a GPU. See `COMPUTE.md`.

@@ -1,0 +1,5 @@
+# Exact environment in which v10.2 was tested and cross-validated (27 Nov 2026), Python 3.13.
+numpy==2.5.3
+scipy==1.18.1
+qiskit==2.6.2
+qiskit-aer==0.18.4

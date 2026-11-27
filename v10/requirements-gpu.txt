@@ -1,0 +1,4 @@
+# GPU runs (N = 30): add CuPy matching the machine's CUDA major version.
+# Not testable in the development workspace; the version actually used is recorded in each run's manifest.
+-r requirements.lock
+cupy-cuda12x>=13

@@ -7,6 +7,11 @@ authors:
   - family-names: Rogers
     given-names: Sean
 license: MIT
+doi: 10.5281/zenodo.24600507
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24600507
+    description: "Zenodo archive of release v10.0.0"
 repository-code: "https://github.com/SpacemanSR/flatland-resonance"
 abstract: >-
   An interactive model of an evaporating black hole as a qubit system (v1-v9, browser)

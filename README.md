@@ -1,5 +1,7 @@
 # Flatland Resonance Model
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24600507.svg)](https://doi.org/10.5281/zenodo.24600507)
+
 An interactive model of spacetime as a superfluid, in nine versions: from a resonance field rising out of a flat source plane, to a 13-qubit black hole that evaporates, forms an island, and has a swallowed message teleported back out of its radiation with the Yoshida–Kitaev decoder.
 
 A Findings page (top-right toggle) states the thesis, summarises the nine versions, and reports four results computed from the model's own engine, with what is published, what is ours and what is computed kept apart.
@@ -23,4 +25,4 @@ It then launches full-screen from its icon and works offline.
 Serve this folder with any static server, for example `python3 -m http.server`, and open http://localhost:8000.
 
 ## License and citation
-MIT licensed (see [`LICENSE`](LICENSE)). To cite this work, use [`CITATION.cff`](CITATION.cff).
+MIT licensed (see [`LICENSE`](LICENSE)). To cite this work, use [`CITATION.cff`](CITATION.cff) or the archived release, v10.0.0: [doi:10.5281/zenodo.24600507](https://doi.org/10.5281/zenodo.24600507).

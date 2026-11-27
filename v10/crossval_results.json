@@ -1,0 +1,194 @@
+{
+ "environment": {
+  "python": "3.13.18",
+  "numpy": "2.5.3",
+  "qiskit": "2.6.2",
+  "qiskit_aer": "0.18.4",
+  "machine": "x86_64",
+  "system": "Linux"
+ },
+ "runs": [
+  {
+   "config": "N15_m1",
+   "arm": "HL_young",
+   "seed": 3001,
+   "gates": 90,
+   "steps": 13,
+   "max_abs_D_diff_bits": 1.7763568394002505e-15,
+   "final_state_fidelity": 1.0,
+   "seconds": 0.1
+  },
+  {
+   "config": "N15_m1",
+   "arm": "HL_young",
+   "seed": 3002,
+   "gates": 90,
+   "steps": 13,
+   "max_abs_D_diff_bits": 3.552713678800501e-15,
+   "final_state_fidelity": 0.9999999999999898,
+   "seconds": 0.1
+  },
+  {
+   "config": "N15_m1",
+   "arm": "HL_young",
+   "seed": 3003,
+   "gates": 90,
+   "steps": 13,
+   "max_abs_D_diff_bits": 3.552713678800501e-15,
+   "final_state_fidelity": 0.9999999999999893,
+   "seconds": 0.1
+  },
+  {
+   "config": "N15_m1",
+   "arm": "HL_old",
+   "seed": 3001,
+   "gates": 70,
+   "steps": 13,
+   "max_abs_D_diff_bits": 1.7763568394002505e-15,
+   "final_state_fidelity": 0.9999999999999991,
+   "seconds": 0.1
+  },
+  {
+   "config": "N15_m1",
+   "arm": "HL_old",
+   "seed": 3002,
+   "gates": 70,
+   "steps": 13,
+   "max_abs_D_diff_bits": 1.7763568394002505e-15,
+   "final_state_fidelity": 0.9999999999999907,
+   "seconds": 0.1
+  },
+  {
+   "config": "N15_m1",
+   "arm": "HL_old",
+   "seed": 3003,
+   "gates": 70,
+   "steps": 13,
+   "max_abs_D_diff_bits": 3.552713678800501e-15,
+   "final_state_fidelity": 0.9999999999999916,
+   "seconds": 0.1
+  },
+  {
+   "config": "N20_m1",
+   "arm": "HL_young",
+   "seed": 3001,
+   "gates": 152,
+   "steps": 18,
+   "max_abs_D_diff_bits": 5.329070518200751e-15,
+   "final_state_fidelity": 0.9999999999999871,
+   "seconds": 8.9
+  },
+  {
+   "config": "N20_m1",
+   "arm": "HL_young",
+   "seed": 3002,
+   "gates": 152,
+   "steps": 18,
+   "max_abs_D_diff_bits": 5.329070518200751e-15,
+   "final_state_fidelity": 0.9999999999999845,
+   "seconds": 8.8
+  },
+  {
+   "config": "N20_m1",
+   "arm": "HL_young",
+   "seed": 3003,
+   "gates": 152,
+   "steps": 18,
+   "max_abs_D_diff_bits": 5.329070518200751e-15,
+   "final_state_fidelity": 0.9999999999999871,
+   "seconds": 8.3
+  },
+  {
+   "config": "N20_m1",
+   "arm": "HL_old",
+   "seed": 3001,
+   "gates": 124,
+   "steps": 18,
+   "max_abs_D_diff_bits": 7.105427357601002e-15,
+   "final_state_fidelity": 0.999999999999992,
+   "seconds": 7.7
+  },
+  {
+   "config": "N20_m1",
+   "arm": "HL_old",
+   "seed": 3002,
+   "gates": 124,
+   "steps": 18,
+   "max_abs_D_diff_bits": 6.217248937900877e-15,
+   "final_state_fidelity": 0.9999999999999816,
+   "seconds": 7.6
+  },
+  {
+   "config": "N20_m1",
+   "arm": "HL_old",
+   "seed": 3003,
+   "gates": 124,
+   "steps": 18,
+   "max_abs_D_diff_bits": 8.881784197001252e-15,
+   "final_state_fidelity": 1.0000000000000004,
+   "seconds": 7.4
+  },
+  {
+   "config": "N20_m2",
+   "arm": "HL_young",
+   "seed": 3001,
+   "gates": 113,
+   "steps": 15,
+   "max_abs_D_diff_bits": 1.4210854715202004e-14,
+   "final_state_fidelity": 0.9999999999999925,
+   "seconds": 7.1
+  },
+  {
+   "config": "N20_m2",
+   "arm": "HL_young",
+   "seed": 3002,
+   "gates": 113,
+   "steps": 15,
+   "max_abs_D_diff_bits": 8.881784197001252e-15,
+   "final_state_fidelity": 0.9999999999999944,
+   "seconds": 6.8
+  },
+  {
+   "config": "N20_m2",
+   "arm": "HL_young",
+   "seed": 3003,
+   "gates": 113,
+   "steps": 15,
+   "max_abs_D_diff_bits": 7.105427357601002e-15,
+   "final_state_fidelity": 0.9999999999999944,
+   "seconds": 7.3
+  },
+  {
+   "config": "N20_m2",
+   "arm": "HL_old",
+   "seed": 3001,
+   "gates": 86,
+   "steps": 15,
+   "max_abs_D_diff_bits": 8.881784197001252e-15,
+   "final_state_fidelity": 0.9999999999999984,
+   "seconds": 7.0
+  },
+  {
+   "config": "N20_m2",
+   "arm": "HL_old",
+   "seed": 3002,
+   "gates": 86,
+   "steps": 15,
+   "max_abs_D_diff_bits": 5.329070518200751e-15,
+   "final_state_fidelity": 0.999999999999992,
+   "seconds": 6.9
+  },
+  {
+   "config": "N20_m2",
+   "arm": "HL_old",
+   "seed": 3003,
+   "gates": 86,
+   "steps": 15,
+   "max_abs_D_diff_bits": 3.552713678800501e-15,
+   "final_state_fidelity": 0.9999999999999858,
+   "seconds": 7.1
+  }
+ ],
+ "worst_max_abs_D_diff_bits": 1.4210854715202004e-14,
+ "worst_final_state_fidelity": 0.9999999999999816
+}

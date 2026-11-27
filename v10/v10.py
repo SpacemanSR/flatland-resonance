@@ -101,22 +101,32 @@ class Hole:
         return self.S2(A) + self.S2(B) - self.S2(list(A) + list(B))
 
 
-def run_schedule(n_core, layer_sizes, seed, release_steps, gradual_width=0, settle=0):
+def page_step(n_core):
+    """First step at which a core-only hole is past its halfway point (Hayden-Preskill 'old')."""
+    return n_core // 2 + 1
+
+
+def run_schedule(n_core, layer_sizes, seed, release_steps, gradual_width=0, settle=0, mix_on_join=None):
     """One trial. release_steps[i] = step at which layer i releases (sharp) or starts (gradual).
-    settle = extra scrambling layers applied after step-0 releases, before the first emission
-    (pilot amendment A1: the ledger baseline's matter is scrambled in before evaporation starts).
+    settle = scrambling layers applied after step-0 releases, before the first emission
+    (pilot amendment 1: the ledger baseline's matter is scrambled in before evaporation starts).
+    mix_on_join = scrambling layers applied right after any release step, before the next emission
+    (pilot-2 amendment: Hayden-Preskill's instantaneous-scrambler idealization; one t*). If None, it
+    equals settle at step 0 and 0 afterwards, which reproduces pilot 1 exactly.
     Returns D(k) for k = 0..n_steps and per-layer traces."""
     h = Hole(n_core, layer_sizes, seed)
-    h._settle = settle
     n_hole_total = n_core + sum(layer_sizes)
     D, per = [], []
     k = 0
+
     def record():
         D.append(h.I2(h.ref, h.rad))
         per.append([h.I2(rl, h.rad) for rl in h.ref_layers])
-    # step 0 releases happen before the first record
+
     while True:
+        released = False
         for i, t in enumerate(release_steps):
+            n_before = len(h.bound[i])
             if gradual_width and h.bound[i]:
                 m = layer_sizes[i]
                 due = [t + round(j * gradual_width / max(m - 1, 1)) for j in range(m)]
@@ -125,10 +135,14 @@ def run_schedule(n_core, layer_sizes, seed, release_steps, gradual_width=0, sett
                     h.release(i, n_due)
             elif not gradual_width and t <= k and h.bound[i]:
                 h.release(i)
+            released = released or len(h.bound[i]) < n_before
         if k == 0:
-            for _ in range(h._settle):
+            for _ in range(settle):
                 h.scramble()
             record()
+        elif released and mix_on_join:
+            for _ in range(mix_on_join):
+                h.scramble()
         if not h.active and not any(h.bound):
             break
         if not h.active:
@@ -138,7 +152,7 @@ def run_schedule(n_core, layer_sizes, seed, release_steps, gradual_width=0, sett
         h.emit()
         k += 1
         record()
-        if len(h.rad) == n_hole_total:
+        if len(h.rad) == n_hole_total or k > 10 * n_hole_total:
             break
     return np.array(D), np.array(per)
 

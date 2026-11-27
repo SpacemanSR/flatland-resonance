@@ -1,0 +1,8 @@
+{
+  "title": "Flatland Resonance Model",
+  "upload_type": "software",
+  "description": "Interactive qubit model of black-hole evaporation (v1-v9) and the v10 headless engine for a preregistered test of filtered unhooking. The v10 directory contains the engine, the pilot and calibration scripts, and the pilot results.",
+  "creators": [{"name": "Rogers, Sean"}],
+  "license": "MIT",
+  "keywords": ["black hole information", "Page curve", "scrambling", "Hayden-Preskill", "qubit model"]
+}

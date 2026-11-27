@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Flatland Resonance Model"
+version: 10.0.0
+date-released: 2026-11-27
+authors:
+  - family-names: Rogers
+    given-names: Sean
+license: MIT
+repository-code: "https://github.com/SpacemanSR/flatland-resonance"
+abstract: >-
+  An interactive model of an evaporating black hole as a qubit system (v1-v9, browser)
+  and a headless state-vector engine (v10, Python) for a preregistered test of
+  filtered unhooking: whether matter that decouples layer by layer leaves more than
+  one turn in the radiation's mutual information D(k).
+keywords:
+  - black hole information
+  - Page curve
+  - scrambling
+  - Hayden-Preskill
+  - qubit model

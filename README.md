@@ -8,6 +8,10 @@ A Sources page (same toggle) cites the papers behind every step of the build and
 
 Everything runs on the device. No server, no data collected.
 
+## Research engine (v10)
+
+The [`v10/`](v10/) folder holds a headless Python engine for a preregistered test of filtered unhooking: whether matter that decouples layer by layer leaves more than one turn in the radiation's mutual information. It includes the pilot scripts and results. [`v10/README.md`](v10/README.md) explains how to reproduce them.
+
 ## Install on a phone
 Open the hosted link, then:
 - iPhone (Safari): Share → Add to Home Screen
@@ -17,3 +21,6 @@ It then launches full-screen from its icon and works offline.
 
 ## Run locally
 Serve this folder with any static server, for example `python3 -m http.server`, and open http://localhost:8000.
+
+## License and citation
+MIT licensed (see [`LICENSE`](LICENSE)). To cite this work, use [`CITATION.cff`](CITATION.cff).
